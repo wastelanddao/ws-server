@@ -11,7 +11,7 @@ class Asset extends BaseObject {
     return this.get('nft');
   }
   set nft(attr) {
-    this.set('nfg', attr);
+    this.set('nft', attr);
   }
 }
 // 只是一个基类，不存数据表

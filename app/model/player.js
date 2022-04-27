@@ -1,7 +1,7 @@
 'use strict';
 const Moralis = require('moralis/node');
 const Contribution = require('./contribution');
-const BaseObject = require('./base');
+const BaseObject = require('./base/base');
 class Player extends BaseObject {
   constructor() {
     // Pass the ClassName to the Moralis.Object constructor

@@ -1,6 +1,6 @@
 'use strict';
 const Moralis = require('moralis/node');
-const BaseObject = require('./base');
+const BaseObject = require('./base/base');
 
 const colorSet = new Set([ 'GRAY', 'GREEN', 'BLUE', 'ORANGE' ]);
 class NFT extends BaseObject {
