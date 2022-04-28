@@ -1,18 +1,26 @@
 'use strict';
 const Moralis = require('moralis/node');
-
-
+const Joi = require('joi');
 class BaseObject extends Moralis.Object {
-  // eslint-disable-next-line no-useless-constructor
-  constructor(attr) {
-    // Pass the ClassName to the Moralis.Object constructor
-    super(attr);
-  }
+  // constructor(attr) {
+  //   // Pass the ClassName to the Moralis.Object constructor
+  //   super(attr);
+  // }
   toPlain() {
     return moralisObjToPlain(this);
   }
+  toJson() {
+    return this.toPlain();
+  }
+  schema() {
+    return Joi.object().unknown();
+  }
+  async save() {
+    await this.schema().validateAsync(this.attributes);
+    await super.save();
+  }
 }
-// 只是一个基类，不存数据表
+
 module.exports = BaseObject;
 
 

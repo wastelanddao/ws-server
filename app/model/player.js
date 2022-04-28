@@ -2,10 +2,24 @@
 const Moralis = require('moralis/node');
 const Contribution = require('./contribution');
 const BaseObject = require('./base/base');
+const NFT = require('./nft');
+const Joi = require('joi');
 class Player extends BaseObject {
   constructor() {
     // Pass the ClassName to the Moralis.Object constructor
     super('Player');
+  }
+  schema() {
+    return Joi.object({
+      name: Joi.string(),
+      wallet: Joi.string(),
+      location: Joi.string(),
+      populationCapacity: Joi.number().integer().min(0),
+      identity: Joi.object().instance(NFT),
+      contribution: Joi.object().instance(Contribution),
+      rewards: Joi.number().min(0),
+      setp: Joi.number().integer().min(0),
+    });
   }
   get name() {
     return this.get('name');
@@ -60,7 +74,7 @@ class Player extends BaseObject {
     const player = new Player();
     player.name = `player ${user.attributes.username}`;
     player.wallet = user.attributes.ethAddress;
-    player.location = ''; // 坐标
+    player.location = '0'; // 坐标
     player.populationCapacity = 3; // 人口上限
     player.identity = undefined; // 身份nft
     player.contribution = new Contribution(); // 贡献

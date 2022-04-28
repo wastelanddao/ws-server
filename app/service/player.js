@@ -13,6 +13,13 @@ class PlayerService extends Service {
     }
     return player;
   }
+
+  async getPlayerById(pid) {
+    const query = new Moralis.Query(Player);
+    query.equalTo('objectId', pid);
+    const player = await query.first({ useMasterKey: true });
+    return player;
+  }
 }
 
 module.exports = PlayerService;

@@ -10,6 +10,7 @@
     "egg": "^2.15.1",
     "egg-jwt": "^3.1.7",
     "egg-scripts": "^2.11.0",
+    "joi": "^17.6.0",
     "moralis": "^1.5.10"
   },
   "devDependencies": {
