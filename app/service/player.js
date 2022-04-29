@@ -3,7 +3,7 @@ const Service = require('egg').Service;
 const Player = require('../model/player');
 class PlayerService extends Service {
   async initPlayer(user) {
-    let player = await Player.getByWallet(user.attributes.ethAddress);
+    let player = await Player.getByWallet(user.ethAddress);
     if (!player) {
       player = Player.fromUser(user);
       await player.save();

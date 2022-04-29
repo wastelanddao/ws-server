@@ -60,8 +60,8 @@ class Player extends BaseObject {
 
   static fromUser(user) {
     const player = new Player();
-    player.name = `player ${user.attributes.username}`;
-    player.wallet = user.attributes.ethAddress;
+    player.name = `player ${user.username}`;
+    player.wallet = user.ethAddress;
     player.location = '0'; // 坐标
     player.populationCapacity = 3; // 人口上限
     player.identity = undefined; // 身份nft

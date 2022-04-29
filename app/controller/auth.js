@@ -11,7 +11,7 @@ class AuthController extends Controller {
     if (!user) {
       ctx.throw('wallet address not found', 401);
     }
-    const authData = user.get('authData');
+    const authData = user.authData;
     const { moralisEth } = authData;
     if (!moralisEth) {
       ctx.throw(500);
