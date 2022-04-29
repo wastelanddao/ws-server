@@ -1,16 +1,12 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const Moralis = require('moralis/node');
-const User = Moralis.User;
+const CustomUser = require('../model/custom_user');
 class AuthController extends Controller {
   async login() {
     const { ctx } = this;
     const { wallet, signature } = ctx.request.body;
-
-    const query = new Moralis.Query(User);
-    query.equalTo('ethAddress', wallet);
-    const user = await query.first({ useMasterKey: true });
+    const user = await CustomUser.getByWallet(wallet);
 
     if (!user) {
       ctx.throw('wallet address not found', 401);

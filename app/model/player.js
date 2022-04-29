@@ -70,6 +70,9 @@ class Player extends BaseObject {
     player.setp = 0; // guide step
     return player;
   }
+  static async getByWallet(address) {
+    return await this.query().equalTo('wallet', address).first({ useMasterKey: true });
+  }
 }
 
 Player.schema = {

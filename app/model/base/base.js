@@ -7,8 +7,13 @@ class BaseObject extends Moralis.Object {
   //   // Pass the ClassName to the Moralis.Object constructor
   //   super(attr);
   // }
-  static async query() {
-    return Moralis.query();
+  static query() {
+    return new Moralis.Query(this);
+  }
+  static async findById(id) {
+    const query = this.query();
+    query.equalTo('objectId', id);
+    return await query.first({ useMasterKey: true });
   }
   toPlain() {
     return moralisObjToPlain(this);

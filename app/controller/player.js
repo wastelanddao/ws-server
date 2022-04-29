@@ -1,7 +1,6 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-// const Moralis = require('moralis/node');
 class PlayerController extends Controller {
   async getPlayer() {
     const { ctx } = this;
