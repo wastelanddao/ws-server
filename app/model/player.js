@@ -63,7 +63,10 @@ class Player extends BaseObject {
     player.wallet = user.ethAddress;
     player.location = '0'; // 坐标
     player.populationCapacity = 3; // 人口上限
-    player.identity = undefined; // 身份nft
+    const identity = new NFT('0x0', '0x1');
+    identity.avatar = '';
+    identity.color = 'GRAY';
+    player.identity = identity; // 身份nft
     player.contribution = {
       metal: 0,
       wood: 0,

@@ -1,4 +1,5 @@
 'use strict';
+const Joi = require('joi');
 const Moralis = require('moralis/node');
 const BaseObject = require('./base/base');
 
@@ -41,5 +42,12 @@ class NFT extends BaseObject {
     return this.set('color', attr);
   }
 }
+
+NFT.schema = {
+  contract: Joi.string(),
+  tokenId: Joi.string(),
+  avatar: Joi.string(),
+  color: Joi.valid('GRAY', 'GREEN', 'BLUE', 'ORANGE'),
+};
 Moralis.Object.registerSubclass('NFT', NFT);
 module.exports = NFT;
