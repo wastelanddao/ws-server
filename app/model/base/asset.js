@@ -4,22 +4,23 @@ const NFT = require('../nft');
 const Joi = require('joi');
 
 class Asset extends BaseObject {
-  constructor() {
-    // Pass the ClassName to the Moralis.Object constructor
-    super('Asset');
-    // nft ref
-    this.nft = undefined;
-  }
   get nft() {
     return this.get('nft');
   }
   set nft(attr) {
     this.set('nft', attr);
   }
+  get playerId() {
+    return this.get('playerId');
+  }
+  set playerId(attr) {
+    this.set('playerId', attr);
+  }
 }
 
 Asset.schema = {
   nft: Joi.object().instance(NFT),
+  playerId: Joi.string(),
 };
 
 module.exports = Asset;

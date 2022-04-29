@@ -3,10 +3,6 @@ const Moralis = require('moralis/node');
 const Joi = require('joi');
 const { getSuperClass, isPlainObject } = require('../../../utils');
 class BaseObject extends Moralis.Object {
-  // constructor(attr) {
-  //   // Pass the ClassName to the Moralis.Object constructor
-  //   super(attr);
-  // }
   static query() {
     return new Moralis.Query(this);
   }

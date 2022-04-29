@@ -1,6 +1,5 @@
 'use strict';
 const Moralis = require('moralis/node');
-const Contribution = require('./contribution');
 const BaseObject = require('./base/base');
 const NFT = require('./nft');
 const Joi = require('joi');
@@ -65,7 +64,13 @@ class Player extends BaseObject {
     player.location = '0'; // 坐标
     player.populationCapacity = 3; // 人口上限
     player.identity = undefined; // 身份nft
-    player.contribution = new Contribution(); // 贡献
+    player.contribution = {
+      metal: 0,
+      wood: 0,
+      water: 0,
+      fire: 0,
+      earth: 0,
+    }; // 贡献
     player.rewards = 0; // 回报
     player.setp = 0; // guide step
     return player;
@@ -81,7 +86,13 @@ Player.schema = {
   location: Joi.string(),
   populationCapacity: Joi.number().integer().min(0),
   identity: Joi.object().instance(NFT),
-  contribution: Joi.object().instance(Contribution),
+  contribution: Joi.object({
+    metal: Joi.number().integer().min(0),
+    wood: Joi.number().integer().min(0),
+    water: Joi.number().integer().min(0),
+    fire: Joi.number().integer().min(0),
+    earth: Joi.number().integer().min(0),
+  }),
   rewards: Joi.number().min(0),
   setp: Joi.number().integer().min(0),
 };
