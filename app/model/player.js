@@ -9,18 +9,6 @@ class Player extends BaseObject {
     // Pass the ClassName to the Moralis.Object constructor
     super('Player');
   }
-  schema() {
-    return Joi.object({
-      name: Joi.string(),
-      wallet: Joi.string(),
-      location: Joi.string(),
-      populationCapacity: Joi.number().integer().min(0),
-      identity: Joi.object().instance(NFT),
-      contribution: Joi.object().instance(Contribution),
-      rewards: Joi.number().min(0),
-      setp: Joi.number().integer().min(0),
-    });
-  }
   get name() {
     return this.get('name');
   }
@@ -83,5 +71,16 @@ class Player extends BaseObject {
     return player;
   }
 }
+
+Player.schema = {
+  name: Joi.string(),
+  wallet: Joi.string(),
+  location: Joi.string(),
+  populationCapacity: Joi.number().integer().min(0),
+  identity: Joi.object().instance(NFT),
+  contribution: Joi.object().instance(Contribution),
+  rewards: Joi.number().min(0),
+  setp: Joi.number().integer().min(0),
+};
 Moralis.Object.registerSubclass('Player', Player);
 module.exports = Player;

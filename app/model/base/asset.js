@@ -10,11 +10,6 @@ class Asset extends BaseObject {
     // nft ref
     this.nft = undefined;
   }
-  schema() {
-    return Joi.object({
-      nft: Joi.object().instance(NFT),
-    }).unknown();
-  }
   get nft() {
     return this.get('nft');
   }
@@ -22,4 +17,9 @@ class Asset extends BaseObject {
     this.set('nft', attr);
   }
 }
+
+Asset.schema = {
+  nft: Joi.object().instance(NFT),
+};
+
 module.exports = Asset;
