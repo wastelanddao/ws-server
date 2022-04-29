@@ -5,14 +5,9 @@ const BaseObject = require('./base/base');
 
 const colorSet = new Set([ 'GRAY', 'GREEN', 'BLUE', 'ORANGE' ]);
 class NFT extends BaseObject {
-  constructor(contract, tokenId) {
+  constructor() {
     // Pass the ClassName to the Moralis.Object constructor
     super('NFT');
-    if (!contract || !tokenId) {
-      throw new Error('need contract and tokenId');
-    }
-    this.contract = contract;
-    this.tokenId = tokenId;
   }
   get contract() {
     return this.get('contract');

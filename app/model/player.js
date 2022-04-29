@@ -63,7 +63,9 @@ class Player extends BaseObject {
     player.wallet = user.ethAddress;
     player.location = '0'; // 坐标
     player.populationCapacity = 3; // 人口上限
-    const identity = new NFT('0x0', '0x1');
+    const identity = new NFT();
+    identity.contract = '0x0';
+    identity.tokenId = '0x1';
     identity.avatar = '';
     identity.color = 'GRAY';
     player.identity = identity; // 身份nft
@@ -79,7 +81,10 @@ class Player extends BaseObject {
     return player;
   }
   static async getByWallet(address) {
-    return await this.query().equalTo('wallet', address).first({ useMasterKey: true });
+    return await this.query()
+      .equalTo('wallet', address)
+      .include('identity')
+      .first({ useMasterKey: true });
   }
 }
 
