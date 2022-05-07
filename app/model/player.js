@@ -61,8 +61,8 @@ class Player extends BaseObject {
     const player = new Player();
     player.name = `player ${user.username}`;
     player.wallet = user.ethAddress;
-    player.location = '0'; // 坐标
-    player.populationCapacity = 3; // 人口上限
+    player.location = '0,0'; // 坐标
+    player.populationCapacity = 5; // 人口上限
     const identity = new NFT();
     identity.contract = '0x0';
     identity.tokenId = '0x1';
@@ -77,7 +77,7 @@ class Player extends BaseObject {
       earth: 0,
     }; // 贡献
     player.rewards = 0; // 回报
-    player.setp = 0; // guide step
+    player.setp = 1; // guide step
     return player;
   }
   static async getByWallet(address) {

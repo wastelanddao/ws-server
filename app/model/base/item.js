@@ -1,6 +1,7 @@
 'use strict';
-const Asset = require('./base/asset');
+const Asset = require('./asset');
 const Joi = require('joi');
+const Moralis = require('moralis/node');
 
 class Item extends Asset {
   constructor() {
@@ -72,7 +73,8 @@ Item.schema = {
   luck: Joi.number().integer(),
   endurance: Joi.number().integer(),
   durability: Joi.number().integer(),
-  status: Joi.valid('INSTOCK', 'status'),
+  status: Joi.valid('INSTOCK', 'CARRIED'),
 };
 
+Moralis.Object.registerSubclass('Item', Item);
 module.exports = Item;

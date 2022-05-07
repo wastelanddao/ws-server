@@ -22,9 +22,10 @@ class BaseObject extends Moralis.Object {
   async validateSchema() {
     let cls = this.constructor;
     let schema = cls.schema || {};
+    // console.log(cls);
     while (cls !== BaseObject) {
       cls = getSuperClass(cls);
-      schema = Object.assign(cls.schema, schema);
+      schema = Object.assign({}, cls.schema, schema);
     }
     return Joi.object(schema).validateAsync(this.attributes);
   }

@@ -1,6 +1,8 @@
 'use strict';
 const Base = require('./base/base');
 const Joi = require('joi');
+const Moralis = require('moralis/node');
+const Villager = require('./villager');
 
 class Activity extends Base {
   constructor() {
@@ -37,6 +39,29 @@ class Activity extends Base {
   set status(attr) {
     return this.set('status', attr);
   }
+  get playerId() { return this.get('playerId'); }
+  set playerId(attr) { return this.set('playerId', attr); }
+
+  async finish(speedUp = false) {
+    if (!speedUp && this.dueTime > new Date()) {
+      throw new Error('still on going');
+    }
+    const villager = Villager.findById(this.villagerId);
+    // activity数组中只保留进行中的
+    villager.activity = villager.activity.filter(act => act.id !== this.id && act.status !== 'ENDED');
+    this.status = 'ENDED';
+    await Promise.all([
+      this.save(),
+      villager.save(),
+    ]);
+  }
+
+  static async findByPlayerId(playerId) {
+    const query = this.query();
+    query.equalTo('playerId', playerId);
+    const os = await query.find({ useMasterKey: true });
+    return os;
+  }
 }
 
 Activity.schema = {
@@ -44,7 +69,9 @@ Activity.schema = {
   startTime: Joi.date(),
   dueTime: Joi.date(),
   villagerId: Joi.string(),
+  playerId: Joi.string(),
   status: Joi.valid('STARTED', 'ENDED'),
 };
 
+Moralis.Object.registerSubclass('Activity', Activity);
 module.exports = Activity;

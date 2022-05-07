@@ -9,4 +9,11 @@ module.exports = app => {
   router.post('/login', controller.auth.login);
 
   router.get('/player/:id', controller.player.getPlayer);
+
+  router.get('/villagers', controller.villager.getVillagers);
+
+  router.get('/buildings', controller.building.getBuildings);
+
+  router.get('/activities', controller.activity.getActivitys);
+  router.post('/activities', controller.activity.doActivity);
 };

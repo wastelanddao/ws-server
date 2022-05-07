@@ -1,9 +1,10 @@
 'use strict';
 const Asset = require('./base/asset');
 const Joi = require('joi');
-
+const Moralis = require('moralis/node');
 const Activity = require('./activity');
-const Item = require('./item');
+// const Item = require('./base/item');
+const Base = require('./base/base');
 
 class Villager extends Asset {
   constructor() {
@@ -18,8 +19,8 @@ class Villager extends Asset {
     strength = 25,
     luck = 25,
     endurance = 25,
-    happiness = 0,
-    inScene = true,
+    happiness = 10,
+    inScene = false,
     activity = [],
     traits = {
       eye: 0,
@@ -29,6 +30,7 @@ class Villager extends Asset {
       mouth: 0,
     },
     carriage = [],
+    tradable = true,
   } = {}) {
     if (!playerId) {
       throw new Error('need player id');
@@ -46,75 +48,98 @@ class Villager extends Asset {
     v.activity = activity;
     v.traits = traits;
     v.carriage = carriage;
-
+    v.tradable = tradable;
     return v;
   }
-  get name() {
-    return this.get('name');
+
+  async doActivity(act) {
+    // const ongling = this.activity;
+    // if (ongling.length > 0) {
+    //   throw new Error('already on working');
+    // }
+    act.villagerId = this.id;
+    act.playerId = this.playerId;
+    console.log(this instanceof Villager);
+    console.log(this.activity[0] instanceof Activity);
+    console.log(this.activity[0] instanceof Base);
+    console.log(this.activity[0] instanceof Moralis.Object);
+    this.activity.push(act);
+    await this.save();
+    return act;
   }
-  set name(attr) {
-    return this.set('name', attr);
+
+  async doPicking() {
+    const act = new Activity();
+    act.type = 'Picking Fruits';
+    const now = new Date();
+    act.startTime = now;
+    const { endurance } = this;
+    let hours = 24;
+    if (endurance > 20) {
+      hours = 24 - (endurance - 20) / 20;
+    }
+    act.dueTime = new Date(now.getTime() + hours * 3600 * 1000);
+    act.status = 'STARTED';
+    return this.doActivity(act);
   }
-  get gender() {
-    return this.get('gender');
+
+  async doHunting() {
+    const act = new Activity();
+    act.type = 'Hunting';
+    const now = new Date();
+    act.startTime = now;
+    const { endurance } = this;
+    let hours = 24;
+    if (endurance > 20) {
+      hours = 24 - (endurance - 20) / 20;
+    }
+    act.dueTime = new Date(now.getTime() + hours * 3600 * 1000);
+    act.status = 'STARTED';
+    return this.doActivity(act);
   }
-  set gender(attr) {
-    return this.set('gender', attr);
+
+  static async findByPlayerId(playerId) {
+    return this.query().equalTo('playerId', playerId).include('activity')
+      .find({ useMasterKey: true });
   }
-  get birthTime() {
-    return this.get('birthTime');
+  static async findById(id) {
+    const query = this.query();
+    query.equalTo('objectId', id).include('activity');
+    return await query.first({ useMasterKey: true });
   }
-  set birthTime(attr) {
-    return this.set('birthTime', attr);
-  }
-  get strength() {
-    return this.get('strength');
-  }
-  set strength(attr) {
-    return this.set('strength', attr);
-  }
-  get luck() {
-    return this.get('luck');
-  }
-  set luck(attr) {
-    return this.set('luck', attr);
-  }
-  get endurance() {
-    return this.get('endurance');
-  }
-  set endurance(attr) {
-    return this.set('endurance', attr);
-  }
-  get happiness() {
-    return this.get('happiness');
-  }
-  set happiness(attr) {
-    return this.set('happiness', attr);
-  }
-  get inScene() {
-    return this.get('inScene');
-  }
-  set inScene(attr) {
-    return this.set('inScene', attr);
-  }
-  get activity() {
-    return this.get('activity');
-  }
-  set activity(attr) {
-    return this.set('activity', attr);
-  }
-  get traits() {
-    return this.get('traits');
-  }
-  set traits(attr) {
-    return this.set('traits', attr);
-  }
-  get carriage() {
-    return this.get('carriage');
-  }
-  set carriage(attr) {
-    return this.set('carriage', attr);
-  }
+  get name() { return this.get('name'); }
+  set name(attr) { return this.set('name', attr); }
+
+  get gender() { return this.get('gender'); }
+  set gender(attr) { return this.set('gender', attr); }
+
+  get birthTime() { return this.get('birthTime'); }
+  set birthTime(attr) { return this.set('birthTime', attr); }
+
+  get strength() { return this.get('strength'); }
+  set strength(attr) { return this.set('strength', attr); }
+
+  get luck() { return this.get('luck'); }
+  set luck(attr) { return this.set('luck', attr); }
+
+  get endurance() { return this.get('endurance'); }
+  set endurance(attr) { return this.set('endurance', attr); }
+
+  get happiness() { return this.get('happiness'); }
+  set happiness(attr) { return this.set('happiness', attr); }
+
+  get inScene() { return this.get('inScene'); }
+  set inScene(attr) { return this.set('inScene', attr); }
+
+  get activity() { return this.get('activity'); }
+  set activity(attr) { return this.set('activity', attr); }
+
+  get traits() { return this.get('traits'); }
+  set traits(attr) { return this.set('traits', attr); }
+
+  get carriage() { return this.get('carriage'); }
+  set carriage(attr) { return this.set('carriage', attr); }
+
 }
 
 Villager.schema = {
@@ -126,7 +151,7 @@ Villager.schema = {
   endurance: Joi.number().integer(),
   happiness: Joi.number().integer(),
   inScene: Joi.bool(),
-  activity: Joi.array().items(Joi.object().instance(Activity)),
+  activity: Joi.array().items(Joi.object().instance(Moralis.Object)),
   traits: Joi.object({
     eye: Joi.number().integer(),
     eyebrow: Joi.number().integer(),
@@ -134,7 +159,8 @@ Villager.schema = {
     nose: Joi.number().integer(),
     mouth: Joi.number().integer(),
   }),
-  carriage: Joi.array().items(Joi.object().instance(Item)),
+  carriage: Joi.array().items(Joi.object().instance(Moralis.Object)),
+  tradable: Joi.bool(),
 };
-
+Moralis.Object.registerSubclass('Villager', Villager);
 module.exports = Villager;
