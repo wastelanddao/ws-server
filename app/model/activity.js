@@ -42,6 +42,9 @@ class Activity extends Base {
   get playerId() { return this.get('playerId'); }
   set playerId(attr) { return this.set('playerId', attr); }
 
+  get extraInfo() { return this.get('extraInfo'); }
+  set extraInfo(attr) { return this.set('extraInfo', attr); }
+
   async finish(speedUp = false) {
     if (!speedUp && this.dueTime > new Date()) {
       throw new Error('still on going');
@@ -71,6 +74,7 @@ Activity.schema = {
   villagerId: Joi.string(),
   playerId: Joi.string(),
   status: Joi.valid('STARTED', 'ENDED'),
+  extraInfo: Joi.object(),
 };
 
 Moralis.Object.registerSubclass('Activity', Activity);
