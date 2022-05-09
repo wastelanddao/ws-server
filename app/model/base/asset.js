@@ -20,6 +20,13 @@ class Asset extends BaseObject {
 
   get tradable() { return this.get('tradable'); }
   set tradable(val) { return this.set('tradable', val); }
+
+  static async findOwnById(id, playerId) {
+    const query = this.query();
+    query.equalTo('objectId', id);
+    query.equalTo('playerId', playerId);
+    return await query.first({ useMasterKey: true });
+  }
 }
 
 Asset.schema = {

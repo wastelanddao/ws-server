@@ -2,9 +2,9 @@
 const Asset = require('./base/asset');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
-const Activity = require('./activity');
+// const Activity = require('./activity');
 // const Item = require('./base/item');
-const Base = require('./base/base');
+// const Base = require('./base/base');
 
 class Villager extends Asset {
   constructor() {
@@ -51,53 +51,6 @@ class Villager extends Asset {
     v.tradable = tradable;
     return v;
   }
-
-  async doActivity(act) {
-    // const ongling = this.activity;
-    // if (ongling.length > 0) {
-    //   throw new Error('already on working');
-    // }
-    act.villagerId = this.id;
-    act.playerId = this.playerId;
-    console.log(this instanceof Villager);
-    console.log(this.activity[0] instanceof Activity);
-    console.log(this.activity[0] instanceof Base);
-    console.log(this.activity[0] instanceof Moralis.Object);
-    this.activity.push(act);
-    await this.save();
-    return act;
-  }
-
-  async doPicking() {
-    const act = new Activity();
-    act.type = 'Picking Fruits';
-    const now = new Date();
-    act.startTime = now;
-    const { endurance } = this;
-    let hours = 24;
-    if (endurance > 20) {
-      hours = 24 - (endurance - 20) / 20;
-    }
-    act.dueTime = new Date(now.getTime() + hours * 3600 * 1000);
-    act.status = 'STARTED';
-    return this.doActivity(act);
-  }
-
-  async doHunting() {
-    const act = new Activity();
-    act.type = 'Hunting';
-    const now = new Date();
-    act.startTime = now;
-    const { endurance } = this;
-    let hours = 24;
-    if (endurance > 20) {
-      hours = 24 - (endurance - 20) / 20;
-    }
-    act.dueTime = new Date(now.getTime() + hours * 3600 * 1000);
-    act.status = 'STARTED';
-    return this.doActivity(act);
-  }
-
   static async findByPlayerId(playerId) {
     return this.query().equalTo('playerId', playerId).include('activity')
       .find({ useMasterKey: true });
