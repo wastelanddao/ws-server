@@ -4,10 +4,6 @@ const Joi = require('joi');
 // const Moralis = require('moralis/node');
 
 class Hut extends Building {
-  // constructor() {
-  //   // Pass the ClassName to the Moralis.Object constructor
-  //   super('Hut');
-  // }
   static create({
     playerId,
     location = 0,
@@ -16,7 +12,7 @@ class Hut extends Building {
     hut.type = 'Hut';
     hut.subType = 'Hut';
     hut.location = 0;
-    hut.villagers = [];
+    hut.villagers = 0;
     hut.playerId = playerId;
     hut.location = location;
     hut.status = 'INUSE';

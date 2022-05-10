@@ -43,7 +43,7 @@ class PlayerService extends Service {
         playerId: player.id,
         location: 1,
       });
-      hut.villagers = [ adam, eve ]; // adam and eva
+      hut.villagers = 2; // adam and eva
 
       // init Hall
       const hall = Hall.create({
@@ -83,6 +83,7 @@ class PlayerService extends Service {
     const huts = await Hut.findByPlayerId(playerId);
     player.populationCapacity = huts.length * 5;
     await player.save();
+    return player.populationCapacity;
   }
 }
 
