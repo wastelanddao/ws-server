@@ -75,6 +75,9 @@ Activity.schema = {
   playerId: Joi.string(),
   status: Joi.valid('STARTED', 'ENDED'),
   extraInfo: Joi.object(),
+  // 收获
+  chests: Joi.array().items(Joi.object().instance(Moralis.Object)),
+  items: Joi.array().items(Joi.object().instance(Moralis.Object)),
 };
 
 Moralis.Object.registerSubclass('Activity', Activity);

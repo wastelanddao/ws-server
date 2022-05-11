@@ -2,7 +2,7 @@
 const Asset = require('./asset');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
-const Villager = require('../villager');
+// const Villager = require('../villager');
 
 class Building extends Asset {
   constructor() {
@@ -58,7 +58,7 @@ Building.schema = {
   type: Joi.valid('Hut', 'Hall', 'Warehouse', 'Portal', 'Workplace'),
   subType: Joi.valid('Hut', 'Hall', 'Warehouse', 'Portal', 'Farm', 'Mill', 'Bakery', 'Vineyard', 'Winery', 'Pig Farm', 'Sausage Shop', 'Rotisserie'),
   status: Joi.valid('WORKING', 'INUSE', 'INSTOCK'),
-  villagers: Joi.array().items(Joi.object().instance(Villager)),
+  villagers: Joi.number().integer().min(0),
   location: Joi.number().integer(),
 };
 Moralis.Object.registerSubclass('Building', Building);
