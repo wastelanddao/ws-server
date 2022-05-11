@@ -125,6 +125,36 @@ class ActivityService extends Service {
     await mother.save();
     return act;
   }
+  async getActivityById(id) {
+    const activity = await Activity.findById(id);
+    await this.finishActivity(activity);
+    return activity;
+
+  }
+  async finishActivity(activity) {
+    const villager = await Villager.findById(activity.villagerId);
+    const now = new Date();
+    if (now < activity.dueTime) {
+      return;
+    }
+    switch (activity.type) {
+      case 'Picking Fruits' : {
+        await this.service.item.finishPicking(villager, activity.id);
+        break;
+      }
+      case 'Hunting' : {
+        await this.service.item.finishHunting(villager, activity.id);
+        break;
+      }
+      case 'Exploring' : {
+        await this.service.item.finishExploring(villager, activity.id);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
 }
 
 module.exports = ActivityService;
