@@ -15,10 +15,10 @@ class ActivityController extends Controller {
     if (!activity) {
       return ctx.throw(`activity ${ctx.params.id} not found`, 404);
     }
-    const [ items, chests ] = await Promise.all([
+    const [ items, chests ] = activity.status === 'ENDED' ? await Promise.all([
       Item.findByActivityId(activity.id),
       Chest.findByActivityId(activity.id),
-    ]);
+    ]) : [[], []];
 
     ctx.body = {
       activity: activity.toJson(),

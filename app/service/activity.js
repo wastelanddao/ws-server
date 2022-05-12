@@ -49,7 +49,7 @@ class ActivityService extends Service {
     act.type = 'Picking Fruits';
     const now = new Date();
     act.startTime = now;
-    const { endurance } = villager;
+    const { realEndurance: endurance } = villager;
     let hours = 24;
     if (endurance > 20) {
       hours = 24 - (endurance - 20) / 20;
@@ -75,7 +75,7 @@ class ActivityService extends Service {
     act.type = 'Hunting';
     const now = new Date();
     act.startTime = now;
-    const { endurance } = this;
+    const { realEndurance: endurance } = villager;
     let hours = 24;
     if (endurance > 20) {
       hours = 24 - (endurance - 20) / 20;
@@ -175,7 +175,7 @@ class ActivityService extends Service {
         break;
       }
       case 'Exploring' : {
-        await this.service.item.finishExploring(villager, activity.id);
+        await this.service.item.finishExploring(villager, activity);
         break;
       }
       default: {

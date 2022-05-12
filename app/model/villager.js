@@ -93,6 +93,17 @@ class Villager extends Asset {
   get carriage() { return this.get('carriage'); }
   set carriage(attr) { return this.set('carriage', attr); }
 
+  // 村民的实际属性 = 当前属性（基础属性+装备属性）* 满意值/100
+  get realLuck() {
+    return this.luck * (this.happiness || 10) / 100;
+  }
+  get realStrength() {
+    return this.strength * (this.happiness || 10) / 100;
+  }
+  get realEndurance() {
+    return this.endurance * (this.happiness || 10) / 100;
+  }
+
 }
 
 Villager.schema = {

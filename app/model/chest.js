@@ -33,7 +33,7 @@ class Chest extends Asset {
 }
 
 Chest.schema = {
-  color: Joi.valid('GREEN', 'ORANGE', 'GRAY'),
+  color: Joi.valid('GREEN', 'ORANGE', 'GRAY', 'GREEN'),
   opened: Joi.bool(),
   items: Joi.array().items(Joi.object().instance(Moralis.Object)),
   activityId: Joi.string(),
