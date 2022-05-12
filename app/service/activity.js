@@ -134,7 +134,7 @@ class ActivityService extends Service {
   async finishActivity(activity) {
     const villager = await Villager.findById(activity.villagerId);
     const now = new Date();
-    if (now < activity.dueTime) {
+    if (now < activity.dueTime || activity.status === 'ENDED') {
       return;
     }
     switch (activity.type) {
