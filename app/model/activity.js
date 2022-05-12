@@ -2,7 +2,7 @@
 const Base = require('./base/base');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
-const Villager = require('./villager');
+// const Villager = require('./villager');
 
 class Activity extends Base {
   constructor() {
@@ -45,20 +45,6 @@ class Activity extends Base {
   get extraInfo() { return this.get('extraInfo'); }
   set extraInfo(attr) { return this.set('extraInfo', attr); }
 
-  async finish(speedUp = false) {
-    if (!speedUp && this.dueTime > new Date()) {
-      throw new Error('still on going');
-    }
-    const villager = Villager.findById(this.villagerId);
-    // activity数组中只保留进行中的
-    villager.activity = villager.activity.filter(act => act.id !== this.id && act.status !== 'ENDED');
-    this.status = 'ENDED';
-    await Promise.all([
-      this.save(),
-      villager.save(),
-    ]);
-  }
-
   static async findByPlayerId(playerId) {
     const query = this.query();
     query.equalTo('playerId', playerId);
@@ -75,9 +61,6 @@ Activity.schema = {
   playerId: Joi.string(),
   status: Joi.valid('STARTED', 'ENDED'),
   extraInfo: Joi.object(),
-  // 收获
-  chests: Joi.array().items(Joi.object().instance(Moralis.Object)),
-  items: Joi.array().items(Joi.object().instance(Moralis.Object)),
 };
 
 Moralis.Object.registerSubclass('Activity', Activity);

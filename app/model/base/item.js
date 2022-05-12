@@ -68,6 +68,12 @@ class Item extends Asset {
   set activityId(attr) {
     return this.set('activityId', attr);
   }
+
+  static async findByActivityId(actId) {
+    const query = this.query();
+    query.equalTo('activityId', actId);
+    return await query.find({ useMasterKey: true });
+  }
 }
 
 Item.schema = {

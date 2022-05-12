@@ -1,28 +1,27 @@
 'use strict';
 const Service = require('egg').Service;
 const ItemFood = require('../model/item_food');
-const Activity = require('../model/Activity');
+// const Activity = require('../model/activity');
 class ItemService extends Service {
   async finishPicking(villager, activityId) {
     const { carriage } = villager;
     let count = 1;
     let strawberry = new ItemFood();
     carriage.forEach(item => {
-      if (item.type === 'Tool' && item.name === 'basket') {
+      if (item.type === 'Tool' && item.category === 'Basket') {
         count = count * 2;
       }
     });
     strawberry = new ItemFood();
-    strawberry.type = 'Food';
+    // strawberry.type = 'Food';
     strawberry.name = 'strawberry';
     strawberry.num = count;
+    strawberry.originalNum = count;
+    strawberry.category = 'Fruits';
+    strawberry.grade = 1;
     strawberry.activityId = activityId;
-    strawberry.status = 'CARRIED';
+    strawberry.status = 'INSTOCK';
     await strawberry.save();
-    const activityObj = new Activity();
-    activityObj.id = activityId;
-    activityObj.status = 'ENDED';
-    await activityObj.save();
   }
   async finishHunting(villager, activityId) {
     const { carriage, luck } = villager;
@@ -38,23 +37,22 @@ class ItemService extends Service {
       count = count * 2;
     }
     carriage.forEach(item => {
-      if (item.type === 'Tool' && item.name === 'bow') {
+      if (item.type === 'Tool' && item.category === 'Bow') {
         count = count * 3;
       }
     });
-    venison.type = 'Food';
+    // venison.type = 'Food';
     venison.name = 'venison';
     venison.num = count;
-    venison.status = 'CARRIED';
+    venison.originalNum = count;
+    venison.category = 'Venison';
+    venison.grade = 1;
+    venison.status = 'INSTOCK';
     venison.activityId = activityId;
     await venison.save();
-    const activityObj = new Activity();
-    activityObj.id = activityId;
-    activityObj.status = 'ENDED';
-    await activityObj.save();
   }
   async finishExploring(villager, activityId) {
-
+    console.log(villager, activityId);
   }
 }
 module.exports = ItemService;
