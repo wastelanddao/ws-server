@@ -1,7 +1,7 @@
 'use strict';
 const Service = require('egg').Service;
 // const Player = require('../model/player');
-const Activity = require('../model/Activity');
+const Activity = require('../model/activity');
 const Villager = require('../model/villager');
 class ActivityService extends Service {
   async doActivity(playerId, actType, ...villagerIds) {
@@ -13,6 +13,10 @@ class ActivityService extends Service {
       case 'Picking Fruits': {
         const [ villagerId ] = villagerIds;
         return await this.doPicking(playerId, villagerId);
+      }
+      case 'Exploring': {
+        const [ villagerId ] = villagerIds;
+        return await this.doExploring(playerId, villagerId);
       }
       case 'Pregnant': {
         const [ fatherId, motherId ] = villagerIds;
@@ -123,6 +127,30 @@ class ActivityService extends Service {
     });
     mother.activity.push(act);
     await mother.save();
+    return act;
+  }
+
+  async doExploring(playerId, villagerId) {
+    const villager = await Villager.findOwnById(villagerId, playerId);
+    if (!villager) {
+      return this.ctx.throw('villager not exists', 404);
+    }
+    if (villager.activity.length > 0) {
+      return this.ctx.throw('already in working');
+    }
+    const act = new Activity();
+    act.playerId = playerId;
+    act.villagerId = villagerId;
+    act.type = 'Exploring';
+    const now = new Date();
+    act.startTime = now;
+    // 总探索时常=SQRT（耐力*1.2）+24 每个角色都至少有一次探索（24小时）
+    const { endurance } = this;
+    const hours = Math.sqrt(endurance * 1.2) + 24;
+    act.dueTime = new Date(now.getTime() + hours * 3600 * 1000);
+    act.status = 'STARTED';
+    villager.activity.push(act);
+    await villager.save();
     return act;
   }
 }
