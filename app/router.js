@@ -15,5 +15,6 @@ module.exports = app => {
   router.get('/buildings', controller.building.getBuildings);
 
   router.get('/activities', controller.activity.getActivitys);
+  router.get('/activities/:id', controller.activity.getActivityById);
   router.post('/activities', controller.activity.doActivity);
 };

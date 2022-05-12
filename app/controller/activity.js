@@ -7,6 +7,11 @@ class ActivityController extends Controller {
     const Activitys = await ctx.service.activity.getByPlayerId(ctx.state.user.id);
     ctx.body = Activitys.map(v => v.toJson());
   }
+  async getActivityById() {
+    const { ctx } = this;
+    const activity = await ctx.service.activity.getActivityById(ctx.params.id);
+    ctx.body = activity.toJson();
+  }
   async doActivity() {
     const { ctx } = this;
     const { villagerId, type } = ctx.request.body;

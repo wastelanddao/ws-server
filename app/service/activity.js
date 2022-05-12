@@ -153,6 +153,44 @@ class ActivityService extends Service {
     await villager.save();
     return act;
   }
+  async getActivityById(id) {
+    const activity = await Activity.findById(id);
+    await this.finishActivity(activity);
+    return activity;
+
+  }
+  async finishActivity(activity) {
+    const villager = await Villager.findOwnById(activity.villagerId, this.ctx.state.user.id);
+    const now = new Date();
+    if (now < activity.dueTime || activity.status === 'ENDED') {
+      return;
+    }
+    switch (activity.type) {
+      case 'Picking Fruits' : {
+        await this.service.item.finishPicking(villager, activity.id);
+        break;
+      }
+      case 'Hunting' : {
+        await this.service.item.finishHunting(villager, activity.id);
+        break;
+      }
+      case 'Exploring' : {
+        await this.service.item.finishExploring(villager, activity.id);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+
+    activity.status = 'ENDED';
+    // activity数组中只保留进行中的
+    villager.activity = villager.activity.filter(act => act.id !== activity.id && act.status !== 'ENDED');
+    await Promise.all([
+      activity.save(),
+      villager.save(),
+    ]);
+  }
 }
 
 module.exports = ActivityService;

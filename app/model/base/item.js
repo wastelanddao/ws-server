@@ -62,11 +62,18 @@ class Item extends Asset {
   set status(attr) {
     return this.set('status', attr);
   }
+  get activityId() {
+    return this.get('activityId');
+  }
+  set activityId(attr) {
+    return this.set('activityId', attr);
+  }
 }
 
 Item.schema = {
   type: Joi.valid('Food', 'Tool', 'Weapon', 'Dress', 'Pet'),
   name: Joi.string(),
+  activityId: Joi.string(),
   num: Joi.number().integer(),
   quality: Joi.number().integer(),
   strength: Joi.number().integer(),
