@@ -4,7 +4,8 @@ const Chest = require('../model/chest');
 const ItemFood = require('../model/item_food');
 // const Activity = require('../model/activity');
 class ItemService extends Service {
-  async finishPicking(villager, activityId) {
+  async finishPicking(villager, activity) {
+    const { id: activityId } = activity;
     const { carriage = [] } = villager;
     let count = 1;
     let strawberry = new ItemFood();
@@ -14,7 +15,6 @@ class ItemService extends Service {
       }
     });
     strawberry = new ItemFood();
-    // strawberry.type = 'Food';
     strawberry.name = 'strawberry';
     strawberry.num = count;
     strawberry.originalNum = count;
@@ -23,9 +23,14 @@ class ItemService extends Service {
     strawberry.activityId = activityId;
     strawberry.status = 'INSTOCK';
     await strawberry.save();
+    activity.status = 'ENDED';
+    await activity.save();
   }
-  async finishHunting(villager, activityId) {
-    const { carriage = [], realLuck: luck, realStrength: strength } = villager;
+  async finishHunting(villager, activity) {
+    const { id: activityId, happiness } = activity;
+    let { carriage = [], realLuck: luck, realStrength: strength } = villager;
+    luck = luck * happiness / 100;
+    strength = strength * happiness / 100;
     const venison = new ItemFood();
     let totalNum = 0;
     // 打猎次数：=1+力量/20
@@ -61,10 +66,15 @@ class ItemService extends Service {
     venison.status = 'INSTOCK';
     venison.activityId = activityId;
     await venison.save();
+    activity.status = 'ENDED';
+    await activity.save();
   }
   async finishExploring(villager, activity) {
-    const activityId = activity.id;
-    const { realLuck: luck, realStrength: strength, realEndurance: endurance } = villager;
+    const { id: activityId, happiness } = activity;
+    let { realLuck: luck, realStrength: strength, realEndurance: endurance } = villager;
+    luck = luck * happiness / 100;
+    strength = strength * happiness / 100;
+    endurance = endurance * happiness / 100;
     // 力量决定探索次数=POWER(力量/120,2) *10+1
     const times = this.ctx.helper.randomTimes(Math.pow(strength / 120, 2));
     const chests = [];
@@ -82,7 +92,7 @@ class ItemService extends Service {
         chests.push(chest);
       }
     }
-    if (chests.length < 0) {
+    if (chests.length < 1) {
       // 一个宝箱都没得到，延期，再来一次
       // 总探索时常=SQRT（耐力*1.2）+24
       const hours = Math.sqrt(endurance * 1.2) + 24;
@@ -91,6 +101,8 @@ class ItemService extends Service {
       return;
     }
     await Promise.all(chests.map(c => c.save()));
+    activity.status = 'ENDED';
+    await activity.save();
   }
 }
 module.exports = ItemService;

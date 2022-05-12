@@ -19,7 +19,6 @@ class Villager extends Asset {
     strength = 25,
     luck = 25,
     endurance = 25,
-    happiness = 10,
     inScene = false,
     activity = [],
     traits = {
@@ -43,7 +42,6 @@ class Villager extends Asset {
     v.strength = strength;
     v.luck = luck;
     v.endurance = endurance;
-    v.happiness = happiness;
     v.inScene = inScene;
     v.activity = activity;
     v.traits = traits;
@@ -78,9 +76,6 @@ class Villager extends Asset {
   get endurance() { return this.get('endurance'); }
   set endurance(attr) { return this.set('endurance', attr); }
 
-  get happiness() { return this.get('happiness'); }
-  set happiness(attr) { return this.set('happiness', attr); }
-
   get inScene() { return this.get('inScene'); }
   set inScene(attr) { return this.set('inScene', attr); }
 
@@ -93,15 +88,21 @@ class Villager extends Asset {
   get carriage() { return this.get('carriage'); }
   set carriage(attr) { return this.set('carriage', attr); }
 
-  // 村民的实际属性 = 当前属性（基础属性+装备属性）* 满意值/100
+  // 是否成年
+  get isAdult() {
+    return (new Date() - new Date(this.birthTime)) > 15 * 24 * 3600 * 1000;
+  }
   get realLuck() {
-    return this.luck * (this.happiness || 10) / 100;
+    const scale = this.isAdult ? 1 : 0.3;
+    return this.luck * scale;
   }
   get realStrength() {
-    return this.strength * (this.happiness || 10) / 100;
+    const scale = this.isAdult ? 1 : 0.3;
+    return this.strength * scale;
   }
   get realEndurance() {
-    return this.endurance * (this.happiness || 10) / 100;
+    const scale = this.isAdult ? 1 : 0.3;
+    return this.endurance * scale;
   }
 
 }
@@ -113,7 +114,6 @@ Villager.schema = {
   strength: Joi.number().integer(),
   luck: Joi.number().integer(),
   endurance: Joi.number().integer(),
-  happiness: Joi.number().integer(),
   inScene: Joi.bool(),
   activity: Joi.array().items(Joi.object().instance(Moralis.Object)),
   traits: Joi.object({

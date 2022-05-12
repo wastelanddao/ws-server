@@ -38,7 +38,7 @@ class ActivityService extends Service {
       return this.ctx.throw('villager not exists', 404);
     }
     villager.activity.forEach(act => {
-      // 特殊处理：female怀孕的时候可以采摘
+      // 特殊处理：female怀孕的时候可以采摘/打猎
       if (act.type !== 'Pregnant') {
         return this.ctx.throw('already in working');
       }
@@ -66,9 +66,12 @@ class ActivityService extends Service {
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
     }
-    if (villager.activity.length > 0) {
-      return this.ctx.throw('already in working');
-    }
+    villager.activity.forEach(act => {
+      // 特殊处理：female怀孕的时候可以采摘/打猎
+      if (act.type !== 'Pregnant') {
+        return this.ctx.throw('already in working');
+      }
+    });
     const act = new Activity();
     act.playerId = playerId;
     act.villagerId = villagerId;
@@ -98,6 +101,9 @@ class ActivityService extends Service {
     if (!mother) {
       this.ctx.throw(`villager ${motherId} not exists`, 404);
     }
+    if (!father.isAdult || !mother.isAdult) {
+      this.ctx.throw('must be adult');
+    }
 
     if (father.gender !== 'MALE') {
       this.ctx.throw('father must a male');
@@ -126,7 +132,10 @@ class ActivityService extends Service {
       fatherId,
     });
     mother.activity.push(act);
-    await mother.save();
+    await Promise.all([
+      mother.save(),
+      father.save(),
+    ]);
     return act;
   }
 
@@ -134,6 +143,9 @@ class ActivityService extends Service {
     const villager = await Villager.findOwnById(villagerId, playerId);
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
+    }
+    if (!villager.isAdult) {
+      this.ctx.throw('must be adult');
     }
     if (villager.activity.length > 0) {
       return this.ctx.throw('already in working');
@@ -144,7 +156,7 @@ class ActivityService extends Service {
     act.type = 'Exploring';
     const now = new Date();
     act.startTime = now;
-    // 总探索时常=SQRT（耐力*1.2）+24 每个角色都至少有一次探索（24小时）
+    // 总探索时常=SQRT（耐力*1.2）+24
     const { endurance } = this;
     const hours = Math.sqrt(endurance * 1.2) + 24;
     act.dueTime = new Date(now.getTime() + hours * 3600 * 1000);
@@ -167,11 +179,11 @@ class ActivityService extends Service {
     }
     switch (activity.type) {
       case 'Picking Fruits' : {
-        await this.service.item.finishPicking(villager, activity.id);
+        await this.service.item.finishPicking(villager, activity);
         break;
       }
       case 'Hunting' : {
-        await this.service.item.finishHunting(villager, activity.id);
+        await this.service.item.finishHunting(villager, activity);
         break;
       }
       case 'Exploring' : {
@@ -182,14 +194,9 @@ class ActivityService extends Service {
         break;
       }
     }
-
-    activity.status = 'ENDED';
     // activity数组中只保留进行中的
     villager.activity = villager.activity.filter(act => act.id !== activity.id && act.status !== 'ENDED');
-    await Promise.all([
-      activity.save(),
-      villager.save(),
-    ]);
+    villager.save();
   }
 }
 
