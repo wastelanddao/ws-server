@@ -11,6 +11,14 @@ module.exports = appInfo => {
    **/
   const config = (exports = {});
 
+  config.cluster = {
+    listen: {
+      path: '',
+      port: 7002,
+      hostname: '0.0.0.0',
+    },
+  };
+
   // add your user config here
   const userConfig = {
     moralis: {
