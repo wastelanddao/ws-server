@@ -15,6 +15,16 @@ class BaseObject extends Moralis.Object {
     const query = this.query();
     return await query.aggregate(pipeline);
   }
+  static async findByEqual(filter, ...includes) {
+    const query = this.query();
+    for (const key of Object.keys(filter)) {
+      query.equalTo(key, filter[key]);
+    }
+    for (const include of includes) {
+      query.include(include);
+    }
+    return await query.find({ useMasterKey: true });
+  }
   toPlain() {
     return moralisObjToPlain(this);
   }

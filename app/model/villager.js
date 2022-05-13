@@ -15,7 +15,7 @@ class Villager extends Asset {
     playerId,
     name = '',
     gender = 'MALE',
-    birthTime = new Date().getTime(),
+    birthTime = 0,
     strength = 25,
     luck = 25,
     endurance = 25,

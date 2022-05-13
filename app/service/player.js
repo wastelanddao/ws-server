@@ -86,12 +86,10 @@ class PlayerService extends Service {
     return player.populationCapacity;
   }
   async getInSceneVillagerByPlayerId(playerId) {
-    return await Villager.findByPipeline([{
-      match: {
-        playerId,
-        inScene: true,
-      },
-    }]);
+    return await Villager.findByEqual({
+      playerId,
+      inScene: true,
+    }, 'activity');
   }
 }
 

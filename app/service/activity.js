@@ -5,8 +5,8 @@ const Activity = require('../model/activity');
 const Villager = require('../model/villager');
 const ItemFood = require('../model/item_food');
 class ActivityService extends Service {
-  async doActivity(playerId, actType, feedFoodItemIds, ...villagerIds) {
-    const happinessPoint = await this.calculationHappiness(feedFoodItemIds);
+  async doActivity(playerId, actType, feedFoodItemIds, villagerIds) {
+    const happinessPoint = actType !== 'Picking Fruits' ? await this.calculationHappiness(feedFoodItemIds) : 0;
     switch (actType) {
       case 'Hunting': {
         const [ villagerId ] = villagerIds;
@@ -199,6 +199,9 @@ class ActivityService extends Service {
   }
   async getActivityById(id) {
     const activity = await Activity.findById(id);
+    if (!activity) {
+      return;
+    }
     await this.finishActivity(activity);
     return activity;
 
@@ -224,7 +227,7 @@ class ActivityService extends Service {
         break;
       }
       case 'Pregnant' : {
-        await this.service.villager.finishPregnant(activity);
+        finished = await this.service.villager.finishPregnant(activity);
         break;
       }
       default: {
@@ -238,38 +241,48 @@ class ActivityService extends Service {
     }
   }
   async calculationHappiness(feedFoodItemIds) {
+    if (!feedFoodItemIds || !feedFoodItemIds.length) {
+      this.ctx.throw('need feed food');
+    }
     let happinessPoint = 0;
     const items = await ItemFood.findByPipeline([
       {
-        match: { objectId: { $in: feedFoodItemIds } },
+        match: { objectId: { $in: feedFoodItemIds }, type: 'Food' },
       },
     ]);
     if (items.length === 0) {
       return happinessPoint;
     }
-    let extraPoint = 18;
+    let extraPoint = 0;
     const basePoint = 10;
-    let foodPoint = 0;
-    items.forEach(food => {
-      if (food.grade !== 3) {
-        extraPoint = 3;
-      }
+    const foodPoint = items.reduce((total, food) => {
       switch (food.grade) {
         case 1: {
-          foodPoint += 3;
-          break;
+          return total + 3;
         }
         case 2: {
-          foodPoint += 6;
-          break;
+          return total + 6;
         }
         case 3: {
-          foodPoint += 24;
+          return total + 24;
+        }
+        default: {
+          return total;
+        }
+      }
+    }, 0);
+    if (items.length >= 3) {
+      extraPoint = 18;
+      const arr = items.sort((a, b) => (a.grade < b.grade ? 1 : -1));
+      for (let i = 0; i < 3; i++) {
+        const food = arr[i];
+        if (food.grade < 3) {
+          extraPoint = 3;
           break;
         }
-        default:break;
       }
-    });
+    }
+
     happinessPoint += (basePoint + foodPoint + extraPoint);
     return happinessPoint;
   }
