@@ -85,6 +85,14 @@ class PlayerService extends Service {
     await player.save();
     return player.populationCapacity;
   }
+  async getInSceneVillagerByPlayerId(playerId) {
+    return await Villager.findByPipeline([{
+      match: {
+        playerId,
+        inScene: true,
+      },
+    }]);
+  }
 }
 
 module.exports = PlayerService;

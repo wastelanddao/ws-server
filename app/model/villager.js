@@ -96,6 +96,12 @@ class Villager extends Asset {
   get happiness() { return this.get('happiness'); }
   set happiness(attr) { return this.set('happiness', attr); }
 
+  get fatherId() { return this.get('fatherId'); }
+  set fatherId(attr) { return this.set('fatherId', attr); }
+
+  get motherId() { return this.get('motherId'); }
+  set motherId(attr) { return this.set('motherId', attr); }
+
   // 是否成年
   get isAdult() {
     return (new Date() - new Date(this.birthTime)) > 15 * 24 * 3600 * 1000;
@@ -116,7 +122,9 @@ class Villager extends Asset {
 }
 
 Villager.schema = {
-  name: Joi.string(),
+  name: Joi.string().allow(''),
+  fatherId: Joi.string(),
+  motherId: Joi.string(),
   gender: Joi.valid('MALE', 'FEMALE'),
   birthTime: Joi.date(),
   strength: Joi.number().integer(),

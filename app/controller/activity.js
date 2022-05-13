@@ -28,9 +28,10 @@ class ActivityController extends Controller {
   }
   async doActivity() {
     const { ctx } = this;
-    const { villagerId, type } = ctx.request.body;
+    const { villagerId, type, items } = ctx.request.body;
+    const feedFoodItemIds = Array.isArray(items) ? items : [ items ];
     const villagerIds = Array.isArray(villagerId) ? villagerId : [ villagerId ];
-    const act = await ctx.service.activity.doActivity(ctx.state.user.id, type, ...villagerIds);
+    const act = await ctx.service.activity.doActivity(ctx.state.user.id, type, feedFoodItemIds, ...villagerIds);
     ctx.body = act.toJson();
   }
 }

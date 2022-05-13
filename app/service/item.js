@@ -58,7 +58,6 @@ class ItemService extends Service {
       totalNum += count;
     }
 
-    // venison.type = 'Food';
     venison.name = 'venison';
     venison.num = totalNum;
     venison.originalNum = totalNum;

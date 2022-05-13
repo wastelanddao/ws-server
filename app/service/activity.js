@@ -3,12 +3,14 @@ const Service = require('egg').Service;
 // const Player = require('../model/player');
 const Activity = require('../model/activity');
 const Villager = require('../model/villager');
+const ItemFood = require('../model/item_food');
 class ActivityService extends Service {
-  async doActivity(playerId, actType, ...villagerIds) {
+  async doActivity(playerId, actType, feedFoodItemIds, ...villagerIds) {
+    const happinessPoint = await this.calculationHappiness(feedFoodItemIds);
     switch (actType) {
       case 'Hunting': {
         const [ villagerId ] = villagerIds;
-        return await this.doHunting(playerId, villagerId);
+        return await this.doHunting(playerId, villagerId, happinessPoint, feedFoodItemIds);
       }
       case 'Picking Fruits': {
         const [ villagerId ] = villagerIds;
@@ -16,11 +18,11 @@ class ActivityService extends Service {
       }
       case 'Exploring': {
         const [ villagerId ] = villagerIds;
-        return await this.doExploring(playerId, villagerId);
+        return await this.doExploring(playerId, villagerId, happinessPoint, feedFoodItemIds);
       }
       case 'Pregnant': {
         const [ fatherId, motherId ] = villagerIds;
-        return await this.doGivingBirth(playerId, fatherId, motherId);
+        return await this.doGivingBirth(playerId, fatherId, motherId, happinessPoint, feedFoodItemIds);
       }
       default:
         return this.ctx.throw('act type error', 400);
@@ -61,7 +63,7 @@ class ActivityService extends Service {
     return act;
   }
 
-  async doHunting(playerId, villagerId) {
+  async doHunting(playerId, villagerId, happinessPoint, feedFoodItemIds) {
     const villager = await Villager.findOwnById(villagerId, playerId);
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
@@ -76,6 +78,8 @@ class ActivityService extends Service {
     act.playerId = playerId;
     act.villagerId = villagerId;
     act.type = 'Hunting';
+    act.happiness = happinessPoint;
+    act.feedFoodItemIds = feedFoodItemIds;
     const now = new Date();
     act.startTime = now;
     const { realEndurance: endurance } = villager;
@@ -87,10 +91,18 @@ class ActivityService extends Service {
     act.status = 'STARTED';
     villager.activity.push(act);
     await villager.save();
+    const promises = [];
+    feedFoodItemIds.forEach(itemId => {
+      const food = new ItemFood();
+      food.id = itemId;
+      food.decrement('num');
+      promises.push(food.save());
+    });
+    await Promise.all(promises);
     return act;
   }
 
-  async doGivingBirth(playerId, fatherId, motherId) {
+  async doGivingBirth(playerId, fatherId, motherId, happinessPoint, feedFoodItemIds) {
     const [ father, mother ] = await Promise.all([
       Villager.findOwnById(fatherId, playerId),
       Villager.findOwnById(motherId, playerId),
@@ -121,6 +133,8 @@ class ActivityService extends Service {
 
     const act = new Activity();
     act.type = 'Pregnant';
+    act.happiness = happinessPoint;
+    act.feedFoodItemIds = feedFoodItemIds;
     const now = new Date();
     act.startTime = now;
     act.playerId = playerId;
@@ -136,10 +150,18 @@ class ActivityService extends Service {
       mother.save(),
       father.save(),
     ]);
+    const promises = [];
+    feedFoodItemIds.forEach(itemId => {
+      const food = new ItemFood();
+      food.id = itemId;
+      food.decrement('num');
+      promises.push(food.save());
+    });
+    await Promise.all(promises);
     return act;
   }
 
-  async doExploring(playerId, villagerId) {
+  async doExploring(playerId, villagerId, happinessPoint, feedFoodItemIds) {
     const villager = await Villager.findOwnById(villagerId, playerId);
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
@@ -154,6 +176,8 @@ class ActivityService extends Service {
     act.playerId = playerId;
     act.villagerId = villagerId;
     act.type = 'Exploring';
+    act.happiness = happinessPoint;
+    act.feedFoodItemIds = feedFoodItemIds;
     const now = new Date();
     act.startTime = now;
     // 总探索时常=SQRT（耐力*1.2）+24
@@ -163,6 +187,14 @@ class ActivityService extends Service {
     act.status = 'STARTED';
     villager.activity.push(act);
     await villager.save();
+    const promises = [];
+    feedFoodItemIds.forEach(itemId => {
+      const food = new ItemFood();
+      food.id = itemId;
+      food.decrement('num');
+      promises.push(food.save());
+    });
+    await Promise.all(promises);
     return act;
   }
   async getActivityById(id) {
@@ -191,6 +223,10 @@ class ActivityService extends Service {
         finished = await this.service.item.finishExploring(villager, activity);
         break;
       }
+      case 'Pregnant' : {
+        await this.service.villager.finishPregnant(activity);
+        break;
+      }
       default: {
         break;
       }
@@ -200,6 +236,42 @@ class ActivityService extends Service {
       villager.activity = villager.activity.filter(act => act.id !== activity.id);
       villager.save();
     }
+  }
+  async calculationHappiness(feedFoodItemIds) {
+    let happinessPoint = 0;
+    const items = await ItemFood.findByPipeline([
+      {
+        match: { objectId: { $in: feedFoodItemIds } },
+      },
+    ]);
+    if (items.length === 0) {
+      return happinessPoint;
+    }
+    let extraPoint = 18;
+    const basePoint = 10;
+    let foodPoint = 0;
+    items.forEach(food => {
+      if (food.grade !== 3) {
+        extraPoint = 3;
+      }
+      switch (food.grade) {
+        case 1: {
+          foodPoint += 3;
+          break;
+        }
+        case 2: {
+          foodPoint += 6;
+          break;
+        }
+        case 3: {
+          foodPoint += 24;
+          break;
+        }
+        default:break;
+      }
+    });
+    happinessPoint += (basePoint + foodPoint + extraPoint);
+    return happinessPoint;
   }
 }
 

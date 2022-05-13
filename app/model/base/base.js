@@ -11,6 +11,10 @@ class BaseObject extends Moralis.Object {
     query.equalTo('objectId', id);
     return await query.first({ useMasterKey: true });
   }
+  static async findByPipeline(pipeline) {
+    const query = this.query();
+    return await query.aggregate(pipeline);
+  }
   toPlain() {
     return moralisObjToPlain(this);
   }
