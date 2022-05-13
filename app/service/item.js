@@ -25,6 +25,7 @@ class ItemService extends Service {
     await strawberry.save();
     activity.status = 'ENDED';
     await activity.save();
+    return true;
   }
   async finishHunting(villager, activity) {
     const { id: activityId, happiness } = activity;
@@ -68,6 +69,7 @@ class ItemService extends Service {
     await venison.save();
     activity.status = 'ENDED';
     await activity.save();
+    return true;
   }
   async finishExploring(villager, activity) {
     const { id: activityId, happiness } = activity;
@@ -98,11 +100,12 @@ class ItemService extends Service {
       const hours = Math.sqrt(endurance * 1.2) + 24;
       activity.dueTime = new Date(activity.dueTime.getTime() + hours * 3600 * 1000);
       await activity.save();
-      return;
+      return false;
     }
     await Promise.all(chests.map(c => c.save()));
     activity.status = 'ENDED';
     await activity.save();
+    return true;
   }
 }
 module.exports = ItemService;

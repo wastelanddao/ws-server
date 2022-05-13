@@ -58,6 +58,11 @@ class Villager extends Asset {
     query.equalTo('objectId', id).include('activity');
     return await query.first({ useMasterKey: true });
   }
+  static async findOwnById(id, playerId) {
+    const query = this.query();
+    query.equalTo('objectId', id).equalTo('playerId', playerId).include('activity');
+    return await query.first({ useMasterKey: true });
+  }
   get name() { return this.get('name'); }
   set name(attr) { return this.set('name', attr); }
 
@@ -87,6 +92,9 @@ class Villager extends Asset {
 
   get carriage() { return this.get('carriage'); }
   set carriage(attr) { return this.set('carriage', attr); }
+
+  get happiness() { return this.get('happiness'); }
+  set happiness(attr) { return this.set('happiness', attr); }
 
   // 是否成年
   get isAdult() {
@@ -125,6 +133,7 @@ Villager.schema = {
   }),
   carriage: Joi.array().items(Joi.object().instance(Moralis.Object)),
   tradable: Joi.bool(),
+  happiness: Joi.number().integer(),
 };
 Moralis.Object.registerSubclass('Villager', Villager);
 module.exports = Villager;

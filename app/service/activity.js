@@ -177,26 +177,29 @@ class ActivityService extends Service {
     if (now < activity.dueTime || activity.status === 'ENDED') {
       return;
     }
+    let finished;
     switch (activity.type) {
       case 'Picking Fruits' : {
-        await this.service.item.finishPicking(villager, activity);
+        finished = await this.service.item.finishPicking(villager, activity);
         break;
       }
       case 'Hunting' : {
-        await this.service.item.finishHunting(villager, activity);
+        finished = await this.service.item.finishHunting(villager, activity);
         break;
       }
       case 'Exploring' : {
-        await this.service.item.finishExploring(villager, activity);
+        finished = await this.service.item.finishExploring(villager, activity);
         break;
       }
       default: {
         break;
       }
     }
-    // activity数组中只保留进行中的
-    villager.activity = villager.activity.filter(act => act.id !== activity.id && act.status !== 'ENDED');
-    villager.save();
+    if (finished) {
+      // activity数组中只保留进行中的
+      villager.activity = villager.activity.filter(act => act.id !== activity.id);
+      villager.save();
+    }
   }
 }
 
