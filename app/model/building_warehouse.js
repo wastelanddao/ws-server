@@ -9,14 +9,12 @@ class Warehouse extends Building {
   //   super('Warehouse');
   // }
   static create({
-    playerId,
     location = 0,
   }) {
     const o = new Warehouse();
     o.type = 'Warehouse';
     o.subType = 'Warehouse';
     o.location = 0;
-    o.playerId = playerId;
     o.location = location;
     o.status = 'INUSE';
     return o;

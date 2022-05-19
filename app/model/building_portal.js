@@ -9,14 +9,11 @@ class Portal extends Building {
   //   super('Portal');
   // }
   static create({
-    playerId,
     location = 0,
   }) {
     const o = new Portal();
     o.type = 'Portal';
     o.subType = 'Portal';
-    o.location = 0;
-    o.playerId = playerId;
     o.location = location;
     o.status = 'INUSE';
     return o;

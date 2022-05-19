@@ -25,20 +25,30 @@ class Building extends Asset {
   get location() { return this.get('location'); }
   set location(val) { return this.set('location', val); }
 
+  static getContractAddress() {
+    return 'building';
+  }
+  async mint(owner) {
+    const { type, subType } = this;
+    const metaData = { type, subType };
+    return await Building.mint721(owner, metaData);
+  }
+
   static async findByPlayerId(playerId, {
     type,
     subType,
   } = {}) {
-    const query = this.query();
-    query.equalTo('playerId', playerId);
+    const filter = {};
     if (type) {
-      query.equalTo('type', type);
+      filter.type = type;
     }
     if (subType) {
-      query.equalTo('subType', subType);
+      filter.subType = subType;
     }
-    const buildings = await query.find({ useMasterKey: true });
-    return buildings;
+    const arr = await super.findByPlayerId(playerId, {
+      filter,
+    });
+    return arr;
   }
 
   // 强制类型转换

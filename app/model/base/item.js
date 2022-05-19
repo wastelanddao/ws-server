@@ -74,6 +74,16 @@ class Item extends Asset {
     query.equalTo('activityId', actId);
     return await query.find({ useMasterKey: true });
   }
+
+  static getContractAddress() {
+    throw new Error('shoud be call from sub class');
+  }
+
+  async mint(owner) {
+    const { type, name, quality, strength, luck, endurance } = this;
+    const metaData = { type, name, quality, strength, luck, endurance };
+    return await this.mint721(owner, metaData);
+  }
 }
 
 Item.schema = {

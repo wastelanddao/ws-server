@@ -5,15 +5,12 @@ const Joi = require('joi');
 
 class Hut extends Building {
   static create({
-    playerId,
     location = 0,
   }) {
     const hut = new Hut();
     hut.type = 'Hut';
     hut.subType = 'Hut';
-    hut.location = 0;
     hut.villagers = 0;
-    hut.playerId = playerId;
     hut.location = location;
     hut.status = 'INUSE';
     return hut;

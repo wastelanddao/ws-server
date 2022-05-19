@@ -1,7 +1,7 @@
 'use strict';
 const Moralis = require('moralis/node');
 const BaseObject = require('./base/base');
-const NFT = require('./nft');
+// const NFT = require('./nft');
 const Joi = require('joi');
 class Player extends BaseObject {
   constructor() {
@@ -63,12 +63,12 @@ class Player extends BaseObject {
     player.wallet = user.ethAddress;
     player.location = '0,0'; // 坐标
     player.populationCapacity = 5; // 人口上限
-    const identity = new NFT();
-    identity.contract = '0x0';
-    identity.tokenId = '0x1';
-    identity.avatar = '';
-    identity.color = 'GRAY';
-    player.identity = identity; // 身份nft
+    // const identity = new NFT();
+    // identity.contract = '0x0';
+    // identity.tokenId = '0x1';
+    // identity.avatar = '';
+    // identity.color = 'GRAY';
+    // player.identity = identity; // 身份nft
     player.contribution = {
       metal: 0,
       wood: 0,
@@ -93,7 +93,7 @@ Player.schema = {
   wallet: Joi.string(),
   location: Joi.string(),
   populationCapacity: Joi.number().integer().min(0),
-  identity: Joi.object().instance(NFT),
+  identity: Joi.any(),
   contribution: Joi.object({
     metal: Joi.number().integer().min(0),
     wood: Joi.number().integer().min(0),

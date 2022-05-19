@@ -16,6 +16,10 @@ class Food extends Item {
 
   get originalNum() { return this.get('originalNum'); }
   set originalNum(val) { return this.set('originalNum', val); }
+
+  static getContractAddress() {
+    return 'item_food';
+  }
 }
 
 Food.schema = {

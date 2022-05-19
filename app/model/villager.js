@@ -2,6 +2,7 @@
 const Asset = require('./base/asset');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
+// const Player = require('./player');
 // const Activity = require('./activity');
 // const Item = require('./base/item');
 // const Base = require('./base/base');
@@ -11,8 +12,13 @@ class Villager extends Asset {
     // Pass the ClassName to the Moralis.Object constructor
     super('Villager');
   }
+
+  async mint(owner) {
+    const { gender, birthTime, strength, luck, endurance, traits } = this;
+    const metaData = { gender, birthTime, strength, luck, endurance, traits };
+    return await Villager.mint721(owner, metaData);
+  }
   static create({
-    playerId,
     name = '',
     gender = 'MALE',
     birthTime = 0,
@@ -31,11 +37,7 @@ class Villager extends Asset {
     carriage = [],
     tradable = true,
   } = {}) {
-    if (!playerId) {
-      throw new Error('need player id');
-    }
     const v = new Villager();
-    v.playerId = playerId;
     v.name = name;
     v.gender = gender;
     v.birthTime = birthTime;
@@ -49,9 +51,8 @@ class Villager extends Asset {
     v.tradable = tradable;
     return v;
   }
-  static async findByPlayerId(playerId) {
-    return this.query().equalTo('playerId', playerId).include('activity')
-      .find({ useMasterKey: true });
+  static getContractAddress() {
+    return 'villager';
   }
   static async findById(id) {
     const query = this.query();
@@ -59,9 +60,13 @@ class Villager extends Asset {
     return await query.first({ useMasterKey: true });
   }
   static async findOwnById(id, playerId) {
-    const query = this.query();
-    query.equalTo('objectId', id).equalTo('playerId', playerId).include('activity');
-    return await query.first({ useMasterKey: true });
+    const [ v ] = await this.findByPlayerId(playerId, {
+      includes: 'activity',
+      filter: {
+        objectId: id,
+      },
+    });
+    return v;
   }
   get name() { return this.get('name'); }
   set name(attr) { return this.set('name', attr); }

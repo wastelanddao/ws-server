@@ -9,14 +9,11 @@ class Hall extends Building {
   //   super('Hall');
   // }
   static create({
-    playerId,
     location = 0,
   }) {
     const hall = new Hall();
     hall.type = 'Hall';
     hall.subType = 'Hall';
-    hall.location = 0;
-    hall.playerId = playerId;
     hall.location = location;
     hall.status = 'INUSE';
     return hall;

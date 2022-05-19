@@ -16,6 +16,10 @@ class Tool extends Item {
 
   get timesUsed() { return this.get('timesUsed'); }
   set timesUsed(val) { return this.set('timesUsed', val); }
+
+  static getContractAddress() {
+    return 'item_tool';
+  }
 }
 
 Tool.schema = {

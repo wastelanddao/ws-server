@@ -1,5 +1,6 @@
 'use strict';
 const Service = require('egg').Service;
+const Player = require('../model/player');
 // const Player = require('../model/player');
 const Villager = require('../model/villager');
 // const Hut = require('../model/building_Hut');
@@ -10,6 +11,10 @@ class VillagerService extends Service {
   }
   async finishPregnant(activity) {
     const { playerId, villagerId: motherId, happiness } = activity;
+    const player = await Player.findById(playerId);
+    if (!player) {
+      throw new Error('player not found');
+    }
     const [ father, mother ] = await Promise.all([
       Villager.findOwnById(activity.extraInfo.fatherId, playerId),
       Villager.findOwnById(motherId, playerId),
@@ -35,12 +40,12 @@ class VillagerService extends Service {
       mouth: 0,
     };
     child.tradable = true;
-    child.playerId = playerId;
     child.carriage = [];
     child.activity = [];
     const refreshPopulationCapacity = await this.service.player.refreshPopulationCapacity(playerId);
     const inSceneVillager = await this.service.player.getInSceneVillagerByPlayerId(playerId);
     child.inScene = inSceneVillager.length < refreshPopulationCapacity;
+    child.tokenId = await child.mint(player.wallet);
     await child.save();
     activity.status = 'ENDED';
     await activity.save();

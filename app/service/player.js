@@ -19,7 +19,6 @@ class PlayerService extends Service {
     {
       // init adam
       const adam = Villager.create({
-        playerId: player.id,
         name: 'Adam',
         gender: 'MALE',
         tradable: false,
@@ -27,12 +26,13 @@ class PlayerService extends Service {
       });
       // init eve
       const eve = Villager.create({
-        playerId: player.id,
         name: 'Eve',
         gender: 'FEMALE',
         tradable: false,
         inScene: true,
       });
+      adam.tokenId = await adam.mint(player.wallet);
+      eve.tokenId = await eve.mint(player.wallet);
       await Promise.all([
         adam.save(),
         eve.save(),
@@ -40,29 +40,34 @@ class PlayerService extends Service {
 
       // init Hut
       const hut = Hut.create({
-        playerId: player.id,
         location: 1,
       });
       hut.villagers = 2; // adam and eva
 
       // init Hall
       const hall = Hall.create({
-        playerId: player.id,
         location: 2,
       });
 
       // init Portal
       const portal = Portal.create({
-        playerId: player.id,
         location: 3,
       });
 
       // init Warehouse
       const warehouse = Warehouse.create({
-        playerId: player.id,
         location: 4,
       });
-
+      const [ hutId, hallId, portalId, warehouseId ] = await Promise.all([
+        hut.mint(player.wallet),
+        hall.mint(player.wallet),
+        portal.mint(player.wallet),
+        warehouse.mint(player.wallet),
+      ]);
+      hut.tokenId = hutId;
+      hall.tokenId = hallId;
+      portal.tokenId = portalId;
+      warehouse.tokenId = warehouseId;
       await Promise.all([
         hut.save(),
         hall.save(),
@@ -86,10 +91,8 @@ class PlayerService extends Service {
     return player.populationCapacity;
   }
   async getInSceneVillagerByPlayerId(playerId) {
-    return await Villager.findByEqual({
-      playerId,
-      inScene: true,
-    }, 'activity');
+    const arr = await Villager.findByPlayerId(playerId);
+    return arr.filter(item => item.inScene);
   }
 }
 
