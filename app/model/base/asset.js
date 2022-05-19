@@ -37,6 +37,9 @@ class Asset extends BaseObject {
     return nft.tokenId;
   }
   static async mint1155(owner, tokenId, num) {
+    if (!owner || !tokenId || !num) {
+      throw new Error('need owner tokenId num');
+    }
     const contract = this.getContractAddress();
     const [ nft ] = await MockNFT.findByWallet(contract, owner, tokenId);
     if (!nft) {

@@ -2,10 +2,13 @@
 const Service = require('egg').Service;
 const Chest = require('../model/chest');
 const ItemFood = require('../model/item_food');
+const Player = require('../model/player');
 // const Activity = require('../model/activity');
+const tokenIds = require('../model/tokenId.json');
 class ItemService extends Service {
   async finishPicking(villager, activity) {
-    const { id: activityId } = activity;
+    const { id: activityId, playerId } = activity;
+    const player = await Player.findById(playerId);
     const { carriage = [] } = villager;
     let count = 1;
     let strawberry = new ItemFood();
@@ -16,19 +19,22 @@ class ItemService extends Service {
     });
     strawberry = new ItemFood();
     strawberry.name = 'strawberry';
+    strawberry.tokenId = tokenIds.strawberry;
     strawberry.num = count;
     strawberry.originalNum = count;
     strawberry.category = 'Fruits';
     strawberry.grade = 1;
     strawberry.activityId = activityId;
     strawberry.status = 'INSTOCK';
+    await strawberry.mint(player.wallet, 1);
     await strawberry.save();
     activity.status = 'ENDED';
     await activity.save();
     return true;
   }
   async finishHunting(villager, activity) {
-    const { id: activityId, happiness } = activity;
+    const { id: activityId, happiness, playerId } = activity;
+    const player = await Player.findById(playerId);
     let { carriage = [], realLuck: luck, realStrength: strength } = villager;
     luck = luck * happiness / 100;
     strength = strength * happiness / 100;
@@ -59,25 +65,27 @@ class ItemService extends Service {
     }
 
     venison.name = 'venison';
+    venison.tokenId = tokenIds.venison;
     venison.num = totalNum;
     venison.originalNum = totalNum;
     venison.category = 'Venison';
     venison.grade = 1;
     venison.status = 'INSTOCK';
     venison.activityId = activityId;
+    await venison.mint(player.wallet, 1);
     await venison.save();
     activity.status = 'ENDED';
     await activity.save();
     return true;
   }
   async finishExploring(villager, activity) {
-    const { id: activityId, happiness } = activity;
+    const { id: activityId, happiness, playerId } = activity;
     let { realLuck: luck, realStrength: strength, realEndurance: endurance } = villager;
     luck = luck * happiness / 100;
     strength = strength * happiness / 100;
     endurance = endurance * happiness / 100;
     // 力量决定探索次数=POWER(力量/120,2) *10+1
-    const times = this.ctx.helper.randomTimes(Math.pow(strength / 120, 2));
+    const times = this.ctx.helper.randomTimes(Math.pow(strength / 120, 2) * 10 + 1);
     const chests = [];
     for (let i = 0; i < times; i++) {
       // 成功率=运气/200+(探索总时长-24)/2.5*0.02
@@ -90,6 +98,7 @@ class ItemService extends Service {
         chest.color = 'GRAY';
         chest.opened = false;
         chest.activityId = activityId;
+        chest.playerId = playerId;
         chests.push(chest);
       }
     }

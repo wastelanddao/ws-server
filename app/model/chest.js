@@ -1,13 +1,16 @@
 'use strict';
-const Asset = require('./base/asset');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
+const BaseObject = require('./base/base');
 
-class Chest extends Asset {
+class Chest extends BaseObject {
   constructor() {
     // Pass the ClassName to the Moralis.Object constructor
     super('Chest');
   }
+  get playerId() { return this.get('playerId'); }
+  set playerId(attr) { return this.set('playerId', attr); }
+
   get color() { return this.get('color'); }
   set color(attr) { return this.set('color', attr); }
 
@@ -33,6 +36,7 @@ class Chest extends Asset {
 }
 
 Chest.schema = {
+  playerId: Joi.string(),
   color: Joi.valid('GREEN', 'ORANGE', 'GRAY', 'GREEN'),
   opened: Joi.bool(),
   items: Joi.array().items(Joi.object().instance(Moralis.Object)),

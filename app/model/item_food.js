@@ -20,6 +20,9 @@ class Food extends Item {
   static getContractAddress() {
     return 'item_food';
   }
+  async mint(owner, num) {
+    await Food.mint1155(owner, this.tokenId, num);
+  }
 }
 
 Food.schema = {

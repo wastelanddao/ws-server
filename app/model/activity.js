@@ -33,9 +33,6 @@ class Activity extends Base {
 
   get extraInfo() { return this.get('extraInfo'); }
   set extraInfo(attr) { return this.set('extraInfo', attr); }
-  // 投喂的食物Itmeid
-  get feedFoodItemIds() { return this.get('feedFoodItemIds'); }
-  set feedFoodItemIds(attr) { return this.set('feedFoodItemIds', attr); }
 
   static async findByPlayerId(playerId) {
     const query = this.query();
@@ -53,7 +50,6 @@ Activity.schema = {
   playerId: Joi.string(),
   status: Joi.valid('STARTED', 'ENDED'),
   happiness: Joi.number().integer(),
-  feedFoodItemIds: Joi.array().items(Joi.string()),
   extraInfo: Joi.object(),
 };
 

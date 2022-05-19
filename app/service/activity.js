@@ -5,12 +5,12 @@ const Activity = require('../model/activity');
 const Villager = require('../model/villager');
 const ItemFood = require('../model/item_food');
 class ActivityService extends Service {
-  async doActivity(playerId, actType, feedFoodItemIds, villagerIds) {
-    const happinessPoint = actType !== 'Picking Fruits' ? await this.calculationHappiness(feedFoodItemIds) : 0;
+  async doActivity(playerId, actType, villagerIds) {
+    const happinessPoint = 100; // todo
     switch (actType) {
       case 'Hunting': {
         const [ villagerId ] = villagerIds;
-        return await this.doHunting(playerId, villagerId, happinessPoint, feedFoodItemIds);
+        return await this.doHunting(playerId, villagerId, happinessPoint);
       }
       case 'Picking Fruits': {
         const [ villagerId ] = villagerIds;
@@ -18,11 +18,11 @@ class ActivityService extends Service {
       }
       case 'Exploring': {
         const [ villagerId ] = villagerIds;
-        return await this.doExploring(playerId, villagerId, happinessPoint, feedFoodItemIds);
+        return await this.doExploring(playerId, villagerId, happinessPoint);
       }
       case 'Pregnant': {
         const [ fatherId, motherId ] = villagerIds;
-        return await this.doGivingBirth(playerId, fatherId, motherId, happinessPoint, feedFoodItemIds);
+        return await this.doGivingBirth(playerId, fatherId, motherId, happinessPoint);
       }
       default:
         return this.ctx.throw('act type error', 400);
@@ -63,7 +63,7 @@ class ActivityService extends Service {
     return act;
   }
 
-  async doHunting(playerId, villagerId, happinessPoint, feedFoodItemIds) {
+  async doHunting(playerId, villagerId, happinessPoint) {
     const villager = await Villager.findOwnById(villagerId, playerId);
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
@@ -79,7 +79,6 @@ class ActivityService extends Service {
     act.villagerId = villagerId;
     act.type = 'Hunting';
     act.happiness = happinessPoint;
-    act.feedFoodItemIds = feedFoodItemIds;
     const now = new Date();
     act.startTime = now;
     const { realEndurance: endurance } = villager;
@@ -91,18 +90,10 @@ class ActivityService extends Service {
     act.status = 'STARTED';
     villager.activity.push(act);
     await villager.save();
-    const promises = [];
-    feedFoodItemIds.forEach(itemId => {
-      const food = new ItemFood();
-      food.id = itemId;
-      food.decrement('num');
-      promises.push(food.save());
-    });
-    await Promise.all(promises);
     return act;
   }
 
-  async doGivingBirth(playerId, fatherId, motherId, happinessPoint, feedFoodItemIds) {
+  async doGivingBirth(playerId, fatherId, motherId, happinessPoint) {
     const [ father, mother ] = await Promise.all([
       Villager.findOwnById(fatherId, playerId),
       Villager.findOwnById(motherId, playerId),
@@ -134,7 +125,6 @@ class ActivityService extends Service {
     const act = new Activity();
     act.type = 'Pregnant';
     act.happiness = happinessPoint;
-    act.feedFoodItemIds = feedFoodItemIds;
     const now = new Date();
     act.startTime = now;
     act.playerId = playerId;
@@ -150,18 +140,10 @@ class ActivityService extends Service {
       mother.save(),
       father.save(),
     ]);
-    const promises = [];
-    feedFoodItemIds.forEach(itemId => {
-      const food = new ItemFood();
-      food.id = itemId;
-      food.decrement('num');
-      promises.push(food.save());
-    });
-    await Promise.all(promises);
     return act;
   }
 
-  async doExploring(playerId, villagerId, happinessPoint, feedFoodItemIds) {
+  async doExploring(playerId, villagerId, happinessPoint) {
     const villager = await Villager.findOwnById(villagerId, playerId);
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
@@ -177,24 +159,15 @@ class ActivityService extends Service {
     act.villagerId = villagerId;
     act.type = 'Exploring';
     act.happiness = happinessPoint;
-    act.feedFoodItemIds = feedFoodItemIds;
     const now = new Date();
     act.startTime = now;
     // 总探索时常=SQRT（耐力*1.2）+24
-    const { endurance } = this;
+    const { endurance } = villager;
     const hours = Math.sqrt(endurance * 1.2) + 24;
     act.dueTime = new Date(now.getTime() + hours * 3600 * 1000);
     act.status = 'STARTED';
     villager.activity.push(act);
     await villager.save();
-    const promises = [];
-    feedFoodItemIds.forEach(itemId => {
-      const food = new ItemFood();
-      food.id = itemId;
-      food.decrement('num');
-      promises.push(food.save());
-    });
-    await Promise.all(promises);
     return act;
   }
   async getActivityById(id) {
