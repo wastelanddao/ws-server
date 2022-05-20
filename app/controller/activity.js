@@ -12,21 +12,24 @@ class ActivityController extends Controller {
   }
   async getActivityById() {
     const { ctx } = this;
-    const activity = await ctx.service.activity.getActivityById(ctx.params.id);
+    const {
+      activity,
+      foods = [],
+      villagers = [],
+      chests = [],
+    } = await ctx.service.activity.getActivityById(ctx.params.id);
     if (!activity) {
       return ctx.throw(`activity ${ctx.params.id} not found`, 404);
     }
-    const [ items, chests, foods ] = activity.status === 'ENDED' ? await Promise.all([
-      Item.findByActivityId(activity.id),
-      Chest.findByActivityId(activity.id),
-      Food.findByActivityId(activity.id),
-    ]) : [[], [], []];
 
     ctx.body = {
       activity: activity.toJson(),
-      items: items.map(i => i.toJson()),
+      items: foods.map(i => ({
+        ...i.toJsonWithInfo(),
+        type: 'Food',
+      })),
       chests: chests.map(c => c.toJson()),
-      foods: foods.map(f => f.toJsonWithInfo()),
+      villagers: villagers.map(v => v.toJson()),
     };
   }
   async doActivity() {

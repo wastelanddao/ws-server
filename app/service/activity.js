@@ -178,40 +178,46 @@ class ActivityService extends Service {
     if (activity.status === 'STARTED'
     // && new Date() < activity.dueTime
     ) {
-      await this.finishActivity(activity);
+      const { foods, villagers, chests } = await this.finishActivity(activity);
+      return {
+        activity,
+        foods,
+        villagers,
+        chests,
+      };
     }
-    return activity;
+    return {
+      activity,
+    };
 
   }
   async finishActivity(activity) {
     const villager = await Villager.findOwnById(activity.villagerId, this.ctx.state.user.id);
 
-    let finished;
     switch (activity.type) {
       case 'Picking Fruits' : {
-        finished = await this.service.item.finishPicking(villager, activity);
-        break;
+        const strawberry = await this.service.item.finishPicking(villager, activity);
+        return {
+          foods: [ strawberry ],
+        };
       }
       case 'Hunting' : {
-        finished = await this.service.item.finishHunting(villager, activity);
-        break;
+        const venison = await this.service.item.finishHunting(villager, activity);
+        return {
+          foods: [ venison ],
+        };
       }
       case 'Exploring' : {
-        finished = await this.service.item.finishExploring(villager, activity);
-        break;
+        const chests = await this.service.item.finishExploring(villager, activity);
+        return { chests };
       }
       case 'Pregnant' : {
-        finished = await this.service.villager.finishPregnant(activity);
-        break;
+        const child = await this.service.villager.finishPregnant(activity);
+        return { villagers: [ child ] };
       }
       default: {
         break;
       }
-    }
-    if (finished) {
-      // activity数组中只保留进行中的
-      villager.activity = villager.activity.filter(act => act.id !== activity.id);
-      villager.save();
     }
   }
   // async calculationHappiness(feedFoodItemIds) {

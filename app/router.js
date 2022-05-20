@@ -17,4 +17,7 @@ module.exports = app => {
   router.get('/activities', controller.activity.getActivitys);
   router.get('/activities/:id', controller.activity.getActivityById);
   router.post('/activities', controller.activity.doActivity);
+
+  router.get('/chests', controller.chest.getUnopenedChests);
+  router.get('/chests/:id', controller.chest.getChest);
 };

@@ -76,18 +76,18 @@ class Item extends Asset {
   }
 
   static getContractAddress() {
-    throw new Error('shoud be call from sub class');
+    return 'item';
   }
 
   async mint(owner) {
     const { type, name, quality, strength, luck, endurance } = this;
     const metaData = { type, name, quality, strength, luck, endurance };
-    return await this.mint721(owner, metaData);
+    return await Item.mint721(owner, metaData);
   }
 }
 
 Item.schema = {
-  type: Joi.valid('Food', 'Tool', 'Weapon', 'Dress', 'Pet'),
+  type: Joi.valid('Tool', 'Weapon', 'Dress', 'Pet'),
   name: Joi.string(),
   activityId: Joi.string(),
   num: Joi.number().integer(),

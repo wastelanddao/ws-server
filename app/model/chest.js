@@ -17,6 +17,10 @@ class Chest extends BaseObject {
   get opened() { return this.get('opened'); }
   set opened(attr) { return this.set('opened', attr); }
 
+  // 开箱时间
+  get openedAt() { return this.get('openedAt'); }
+  set openedAt(attr) { return this.set('openedAt', attr); }
+
   get items() { return this.get('items'); }
   set items(attr) { return this.set('items', attr); }
 
@@ -27,18 +31,35 @@ class Chest extends BaseObject {
     return this.set('activityId', attr);
   }
 
+  get isGreen() {
+    return this.color === 'GREEN';
+  }
+
   static async findByActivityId(actId) {
     const query = this.query();
     query.equalTo('activityId', actId);
     query.include('items');
     return await query.find({ useMasterKey: true });
   }
+
+  static async findOwnById(id, playerId) {
+    const query = this.query();
+    query.equalTo('objectId', id);
+    query.equalTo('playerId', playerId);
+    query.include('items');
+    return await query.first({ useMasterKey: true });
+  }
+
+  // static async findByPlayerId(playerId) {
+
+  // }
 }
 
 Chest.schema = {
   playerId: Joi.string(),
-  color: Joi.valid('GREEN', 'ORANGE', 'GRAY', 'GREEN'),
+  color: Joi.valid('ORANGE', 'GRAY', 'GREEN'),
   opened: Joi.bool(),
+  openedAt: Joi.date(),
   items: Joi.array().items(Joi.object().instance(Moralis.Object)),
   activityId: Joi.string(),
 };

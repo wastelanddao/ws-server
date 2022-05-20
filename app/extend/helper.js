@@ -16,4 +16,14 @@ module.exports = {
     }
     return Math.random() < probability;
   },
+  randomRangInt([ start, end ]) {
+    if (end < start) {
+      throw new Error('end shoud bigger than start');
+    }
+    return parseInt(start + Math.random() * (end - start));
+  },
+  randomSelect(arr) {
+    const idx = this.randomRangInt([ 0, arr.length ]);
+    return arr[idx];
+  },
 };

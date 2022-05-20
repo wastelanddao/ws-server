@@ -9,6 +9,7 @@ module.exports = () => {
     try {
       const decoded = ctx.app.jwt.decode(token);
       ctx.state.user = decoded;
+      ctx.state.player = decoded;
     } catch (err) {
       ctx.throw(err.message, 401);
     }

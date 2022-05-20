@@ -49,7 +49,9 @@ class VillagerService extends Service {
     await child.save();
     activity.status = 'ENDED';
     await activity.save();
-    return true;
+    mother.activity = mother.activity.filter(act => act.id !== activity.id);
+    await mother.save();
+    return child;
   }
 }
 

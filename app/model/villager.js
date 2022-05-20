@@ -16,7 +16,9 @@ class Villager extends Asset {
   async mint(owner) {
     const { gender, birthTime, strength, luck, endurance, traits } = this;
     const metaData = { gender, birthTime, strength, luck, endurance, traits };
-    return await Villager.mint721(owner, metaData);
+    const tokenId = await Villager.mint721(owner, metaData);
+    this.tokenId = tokenId;
+    return tokenId;
   }
   static create({
     name = '',

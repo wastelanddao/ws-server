@@ -20,12 +20,14 @@ class ItemService extends Service {
     const strawberry = new Food();
     strawberry.num = count;
     strawberry.tokenId = foodInfo.strawberry.tokenId;
-    strawberry.activityId = activityId;
+    // strawberry.activityId = activityId;
     await strawberry.mint(player.wallet);
     await strawberry.save();
     activity.status = 'ENDED';
     await activity.save();
-    return true;
+    villager.activity = villager.activity.filter(act => act.id !== activity.id);
+    await villager.save();
+    return strawberry;
   }
   async finishHunting(villager, activity) {
     const { id: activityId, happiness, playerId } = activity;
@@ -61,12 +63,14 @@ class ItemService extends Service {
     const venison = new Food();
     venison.tokenId = foodInfo.venison.tokenId;
     venison.num = totalNum;
-    venison.activityId = activityId;
+    // venison.activityId = activityId;
     await venison.mint(player.wallet);
     await venison.save();
     activity.status = 'ENDED';
     await activity.save();
-    return true;
+    villager.activity = villager.activity.filter(act => act.id !== activity.id);
+    await villager.save();
+    return venison;
   }
   async finishExploring(villager, activity) {
     const { id: activityId, happiness, playerId } = activity;
@@ -84,10 +88,8 @@ class ItemService extends Service {
       if (this.ctx.helper.randomBool(probability)) {
         // 成功获取宝箱
         const chest = new Chest();
-        // todo: 宝箱颜色随机算法
-        chest.color = 'GRAY';
         chest.opened = false;
-        chest.activityId = activityId;
+        // chest.activityId = activityId;
         chest.playerId = playerId;
         chests.push(chest);
       }
@@ -98,12 +100,14 @@ class ItemService extends Service {
       const hours = Math.sqrt(endurance * 1.2) + 24;
       activity.dueTime = new Date(activity.dueTime.getTime() + hours * 3600 * 1000);
       await activity.save();
-      return false;
+      return [];
     }
     await Promise.all(chests.map(c => c.save()));
     activity.status = 'ENDED';
     await activity.save();
-    return true;
+    villager.activity = villager.activity.filter(act => act.id !== activity.id);
+    await villager.save();
+    return chests;
   }
 }
 module.exports = ItemService;
