@@ -2,10 +2,7 @@
 const Service = require('egg').Service;
 const Player = require('../model/player');
 const Villager = require('../model/villager');
-const Hut = require('../model/building_hut');
-const Hall = require('../model/building_hall');
-const Portal = require('../model/building_portal');
-const Warehouse = require('../model/building_warehouse');
+const Building = require('../model/building');
 class PlayerService extends Service {
   async initPlayer(user) {
     let player = await Player.getByWallet(user.ethAddress);
@@ -39,25 +36,29 @@ class PlayerService extends Service {
       ]);
 
       // init Hut
-      const hut = Hut.create({
-        location: 1,
-      });
+      const hut = new Building();
+      hut.type = 'Hut';
+      hut.subType = 'Hut';
+      hut.location = 1;
       hut.villagers = 2; // adam and eva
 
       // init Hall
-      const hall = Hall.create({
-        location: 2,
-      });
+      const hall = new Building();
+      hall.type = 'Hall';
+      hall.subType = 'Hall';
+      hall.location = 2;
 
       // init Portal
-      const portal = Portal.create({
-        location: 3,
-      });
+      const portal = new Building();
+      portal.type = 'Portal';
+      portal.subType = 'Portal';
+      portal.location = 3;
 
       // init Warehouse
-      const warehouse = Warehouse.create({
-        location: 4,
-      });
+      const warehouse = new Building();
+      warehouse.type = 'Warehouse';
+      warehouse.subType = 'Warehouse';
+      warehouse.location = 4;
       const [ hutId, hallId, portalId, warehouseId ] = await Promise.all([
         hut.mint(player.wallet),
         hall.mint(player.wallet),
@@ -84,11 +85,15 @@ class PlayerService extends Service {
   }
 
   async refreshPopulationCapacity(playerId) {
-    const player = await Player.findById(playerId);
-    const huts = await Hut.findByPlayerId(playerId);
-    player.populationCapacity = huts.length * 5;
-    await player.save();
-    return player.populationCapacity;
+    // const player = await Player.findById(playerId);
+    // const huts = await Hut.findByPlayerId(playerId);
+    // player.populationCapacity = huts.length * 5;
+    // await player.save();
+    // return player.populationCapacity;
+    // todo
+
+    playerId;
+    return 99999;
   }
   async getInSceneVillagerByPlayerId(playerId) {
     const arr = await Villager.findByPlayerId(playerId);

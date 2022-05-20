@@ -3,7 +3,7 @@ const Service = require('egg').Service;
 // const Player = require('../model/player');
 const Activity = require('../model/activity');
 const Villager = require('../model/villager');
-const ItemFood = require('../model/item_food');
+// const Food = require('../model/food');
 class ActivityService extends Service {
   async doActivity(playerId, actType, villagerIds) {
     const happinessPoint = 100; // todo
@@ -173,18 +173,19 @@ class ActivityService extends Service {
   async getActivityById(id) {
     const activity = await Activity.findById(id);
     if (!activity) {
-      return;
+      throw new Error(`activity ${id} not found`);
     }
-    await this.finishActivity(activity);
+    if (activity.status === 'STARTED'
+    // && new Date() < activity.dueTime
+    ) {
+      await this.finishActivity(activity);
+    }
     return activity;
 
   }
   async finishActivity(activity) {
     const villager = await Villager.findOwnById(activity.villagerId, this.ctx.state.user.id);
-    const now = new Date();
-    if (now < activity.dueTime || activity.status === 'ENDED') {
-      return;
-    }
+
     let finished;
     switch (activity.type) {
       case 'Picking Fruits' : {
@@ -213,52 +214,52 @@ class ActivityService extends Service {
       villager.save();
     }
   }
-  async calculationHappiness(feedFoodItemIds) {
-    if (!feedFoodItemIds || !feedFoodItemIds.length) {
-      this.ctx.throw('need feed food');
-    }
-    let happinessPoint = 0;
-    const items = await ItemFood.findByPipeline([
-      {
-        match: { objectId: { $in: feedFoodItemIds }, type: 'Food' },
-      },
-    ]);
-    if (items.length === 0) {
-      return happinessPoint;
-    }
-    let extraPoint = 0;
-    const basePoint = 10;
-    const foodPoint = items.reduce((total, food) => {
-      switch (food.grade) {
-        case 1: {
-          return total + 3;
-        }
-        case 2: {
-          return total + 6;
-        }
-        case 3: {
-          return total + 24;
-        }
-        default: {
-          return total;
-        }
-      }
-    }, 0);
-    if (items.length >= 3) {
-      extraPoint = 18;
-      const arr = items.sort((a, b) => (a.grade < b.grade ? 1 : -1));
-      for (let i = 0; i < 3; i++) {
-        const food = arr[i];
-        if (food.grade < 3) {
-          extraPoint = 3;
-          break;
-        }
-      }
-    }
+  // async calculationHappiness(feedFoodItemIds) {
+  //   if (!feedFoodItemIds || !feedFoodItemIds.length) {
+  //     this.ctx.throw('need feed food');
+  //   }
+  //   let happinessPoint = 0;
+  //   const items = await ItemFood.findByPipeline([
+  //     {
+  //       match: { objectId: { $in: feedFoodItemIds }, type: 'Food' },
+  //     },
+  //   ]);
+  //   if (items.length === 0) {
+  //     return happinessPoint;
+  //   }
+  //   let extraPoint = 0;
+  //   const basePoint = 10;
+  //   const foodPoint = items.reduce((total, food) => {
+  //     switch (food.grade) {
+  //       case 1: {
+  //         return total + 3;
+  //       }
+  //       case 2: {
+  //         return total + 6;
+  //       }
+  //       case 3: {
+  //         return total + 24;
+  //       }
+  //       default: {
+  //         return total;
+  //       }
+  //     }
+  //   }, 0);
+  //   if (items.length >= 3) {
+  //     extraPoint = 18;
+  //     const arr = items.sort((a, b) => (a.grade < b.grade ? 1 : -1));
+  //     for (let i = 0; i < 3; i++) {
+  //       const food = arr[i];
+  //       if (food.grade < 3) {
+  //         extraPoint = 3;
+  //         break;
+  //       }
+  //     }
+  //   }
 
-    happinessPoint += (basePoint + foodPoint + extraPoint);
-    return happinessPoint;
-  }
+  //   happinessPoint += (basePoint + foodPoint + extraPoint);
+  //   return happinessPoint;
+  // }
 }
 
 module.exports = ActivityService;

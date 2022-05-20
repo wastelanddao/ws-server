@@ -1,5 +1,5 @@
 'use strict';
-const Asset = require('./asset');
+const Asset = require('./base/asset');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
 // const Villager = require('../villager');

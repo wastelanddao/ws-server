@@ -1,8 +1,9 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const Item = require('../model/base/item');
+const Item = require('../model/item');
 const Chest = require('../model/chest');
+const Food = require('../model/food');
 class ActivityController extends Controller {
   async getActivitys() {
     const { ctx } = this;
@@ -15,15 +16,17 @@ class ActivityController extends Controller {
     if (!activity) {
       return ctx.throw(`activity ${ctx.params.id} not found`, 404);
     }
-    const [ items, chests ] = activity.status === 'ENDED' ? await Promise.all([
+    const [ items, chests, foods ] = activity.status === 'ENDED' ? await Promise.all([
       Item.findByActivityId(activity.id),
       Chest.findByActivityId(activity.id),
-    ]) : [[], []];
+      Food.findByActivityId(activity.id),
+    ]) : [[], [], []];
 
     ctx.body = {
       activity: activity.toJson(),
       items: items.map(i => i.toJson()),
       chests: chests.map(c => c.toJson()),
+      foods: foods.map(f => f.toJsonWithInfo()),
     };
   }
   async doActivity() {

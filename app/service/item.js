@@ -1,32 +1,27 @@
 'use strict';
 const Service = require('egg').Service;
 const Chest = require('../model/chest');
-const ItemFood = require('../model/item_food');
+const Food = require('../model/food');
 const Player = require('../model/player');
 // const Activity = require('../model/activity');
-const tokenIds = require('../model/tokenId.json');
+// const tokenIds = require('../model/tokenId.js');
+const foodInfo = require('../model/food_info');
 class ItemService extends Service {
   async finishPicking(villager, activity) {
     const { id: activityId, playerId } = activity;
     const player = await Player.findById(playerId);
     const { carriage = [] } = villager;
     let count = 1;
-    let strawberry = new ItemFood();
     carriage.forEach(item => {
-      if (item.type === 'Tool' && item.category === 'Basket') {
+      if (item.type === 'Tool' && item.name === 'Basket') {
         count = count * 2;
       }
     });
-    strawberry = new ItemFood();
-    strawberry.name = 'strawberry';
-    strawberry.tokenId = tokenIds.strawberry;
+    const strawberry = new Food();
     strawberry.num = count;
-    strawberry.originalNum = count;
-    strawberry.category = 'Fruits';
-    strawberry.grade = 1;
+    strawberry.tokenId = foodInfo.strawberry.tokenId;
     strawberry.activityId = activityId;
-    strawberry.status = 'INSTOCK';
-    await strawberry.mint(player.wallet, 1);
+    await strawberry.mint(player.wallet);
     await strawberry.save();
     activity.status = 'ENDED';
     await activity.save();
@@ -38,7 +33,6 @@ class ItemService extends Service {
     let { carriage = [], realLuck: luck, realStrength: strength } = villager;
     luck = luck * happiness / 100;
     strength = strength * happiness / 100;
-    const venison = new ItemFood();
     let totalNum = 0;
     // 打猎次数：=1+力量/20
     const times = this.ctx.helper.randomTimes(1 + strength / 20);
@@ -56,7 +50,7 @@ class ItemService extends Service {
       }
       for (const item of carriage) {
         // 工具双倍加成
-        if (item.type === 'Tool' && item.category === 'Bow') {
+        if (item.type === 'Tool' && item.name === 'Bow') {
           count = count * 3;
         }
         break;
@@ -64,15 +58,11 @@ class ItemService extends Service {
       totalNum += count;
     }
 
-    venison.name = 'venison';
-    venison.tokenId = tokenIds.venison;
+    const venison = new Food();
+    venison.tokenId = foodInfo.venison.tokenId;
     venison.num = totalNum;
-    venison.originalNum = totalNum;
-    venison.category = 'Venison';
-    venison.grade = 1;
-    venison.status = 'INSTOCK';
     venison.activityId = activityId;
-    await venison.mint(player.wallet, 1);
+    await venison.mint(player.wallet);
     await venison.save();
     activity.status = 'ENDED';
     await activity.save();

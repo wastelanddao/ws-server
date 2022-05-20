@@ -18,6 +18,9 @@ class Asset extends BaseObject {
   get tradable() { return this.get('tradable'); }
   set tradable(val) { return this.set('tradable', val); }
 
+  get activityId() { return this.get('activityId'); }
+  set activityId(val) { return this.set('activityId', val); }
+
   static getContractAddress() {
     throw new Error('must override this function');
   }
@@ -147,6 +150,7 @@ Asset.schema = {
   tokenId: Joi.string(),
   num: Joi.number().integer(),
   tradable: Joi.bool(),
+  activityId: Joi.string(),
 };
 
 module.exports = Asset;
