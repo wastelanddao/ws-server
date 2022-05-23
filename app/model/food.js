@@ -46,10 +46,22 @@ class Food extends Asset {
     };
   }
 
-  static async findByActivityId(actId) {
-    const query = this.query();
-    query.equalTo('activityId', actId);
-    return await query.find({ useMasterKey: true });
+  // static async findByActivityId(actId) {
+  //   const query = this.query();
+  //   query.equalTo('activityId', actId);
+  //   return await query.find({ useMasterKey: true });
+  // }
+
+  static async findByPlayerId() {
+    throw new Error('同质化token不应使用此方法');
+  }
+  // 获取所有食物类型的信息
+  static async getFoodInfos(owner) {
+    const foods = await this.getNFTs(owner);
+    return foods.map(food => {
+      const obj = this.createFromTokenId(food.tokenId, food.num);
+      return obj.toItem();
+    });
   }
 }
 

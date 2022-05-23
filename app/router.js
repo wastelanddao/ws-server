@@ -20,4 +20,6 @@ module.exports = app => {
 
   router.get('/chests', controller.chest.getUnopenedChests);
   router.get('/chests/:id', controller.chest.getChest);
+
+  router.get('/items', controller.item.getItems);
 };

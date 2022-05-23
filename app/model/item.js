@@ -69,11 +69,11 @@ class Item extends Asset {
     return this.set('activityId', attr);
   }
 
-  static async findByActivityId(actId) {
-    const query = this.query();
-    query.equalTo('activityId', actId);
-    return await query.find({ useMasterKey: true });
-  }
+  // static async findByActivityId(actId) {
+  //   const query = this.query();
+  //   query.equalTo('activityId', actId);
+  //   return await query.find({ useMasterKey: true });
+  // }
 
   static getContractAddress() {
     return 'item';
@@ -82,7 +82,8 @@ class Item extends Asset {
   async mint(owner) {
     const { type, name, quality, strength, luck, endurance } = this;
     const metaData = { type, name, quality, strength, luck, endurance };
-    return await Item.mint721(owner, metaData);
+    const tokenId = await Item.mint721(owner, metaData);
+    this.tokenId = tokenId;
   }
 }
 

@@ -6,6 +6,7 @@ const Player = require('../model/player');
 // const Activity = require('../model/activity');
 // const tokenIds = require('../model/tokenId.js');
 const foodInfo = require('../model/food_info');
+const Item = require('../model/item');
 class ItemService extends Service {
   async finishPicking(villager, activity) {
     const { id: activityId, playerId } = activity;
@@ -108,6 +109,13 @@ class ItemService extends Service {
     villager.activity = villager.activity.filter(act => act.id !== activity.id);
     await villager.save();
     return chests;
+  }
+
+  // 获取所有物品，包括食物，返回结果为json object
+  async getItemsInfo() {
+    const foods = await Food.getFoodInfos(this.ctx.state.player.wallet);
+    const items = (await Item.findByPlayerId(this.ctx.state.player.id)).map(i => i.toJson());
+    return [ ...foods, ...items ];
   }
 }
 module.exports = ItemService;
