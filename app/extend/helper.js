@@ -26,4 +26,24 @@ module.exports = {
     const idx = this.randomRangInt([ 0, arr.length ]);
     return arr[idx];
   },
+  randomSelectWithRatio(arr, ratioArr) {
+    if (!arr.length) {
+      throw new Error('should not be empty');
+    }
+    if (arr.length !== ratioArr.length) {
+      throw new Error('length should equal');
+    }
+    let cnt = 10;
+    while (cnt > 0) {
+      for (const idx in ratioArr) {
+        const ratio = ratioArr[idx];
+        if (this.randomBool(ratio)) {
+          return arr[idx];
+        }
+      }
+      cnt -= 1;
+    }
+    // 循环10次还没中,那就随机取一个
+    return this.randomSelect(arr);
+  },
 };

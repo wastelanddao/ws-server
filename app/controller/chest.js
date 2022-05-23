@@ -10,26 +10,21 @@ class ChestController extends Controller {
   async getChest() {
     let {
       chest,
-      items = [],
-      foods = [],
-      villagers = [],
+      item,
+      food,
+      villager,
     } = await this.ctx.service.chest.getChest(this.ctx.params.id);
     if (!chest) {
       this.ctx.throw('chest not found', 404);
     }
     chest = chest.toJson();
-    items = items.map(i => i.toJson());
-    foods = foods.map(f => ({
-      ...f.toJsonWithInfo(),
-      type: 'Food',
-    }));
-    villagers = villagers.map(v => ({
-      ...v.toJson(),
-      type: 'Villager',
-    }));
+    item = item ? item.toJson() : undefined;
+    food = food ? food.toItem() : undefined;
     this.ctx.body = {
       ...chest,
-      items: [ ...items, ...villagers, ...foods ],
+      villager,
+      item: item || food,
+      building: undefined, // 预留，暂时需求没有开出building的情况
     };
   }
 }

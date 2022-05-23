@@ -34,10 +34,11 @@ class Activity extends Base {
   get extraInfo() { return this.get('extraInfo'); }
   set extraInfo(attr) { return this.set('extraInfo', attr); }
 
-  static async findByPlayerId(playerId) {
-    const query = this.query();
-    query.equalTo('playerId', playerId);
-    const os = await query.find({ useMasterKey: true });
+  static async findByPlayerId(playerId, filter) {
+    const os = await this.findByEqual({
+      ...filter,
+      playerId,
+    });
     return os;
   }
 }

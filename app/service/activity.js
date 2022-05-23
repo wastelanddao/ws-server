@@ -29,8 +29,8 @@ class ActivityService extends Service {
     }
   }
 
-  async getByPlayerId(playerId) {
-    const arr = await Activity.findByPlayerId(playerId);
+  async getByPlayerId(playerId, status) {
+    const arr = await Activity.findByPlayerId(playerId, { status });
     return arr;
   }
 
@@ -175,20 +175,42 @@ class ActivityService extends Service {
     if (!activity) {
       throw new Error(`activity ${id} not found`);
     }
-    if (activity.status === 'STARTED'
-    // && new Date() < activity.dueTime
-    ) {
-      const { foods, villagers, chests } = await this.finishActivity(activity);
+    // if (activity.status === 'STARTED'
+    // // && new Date() < activity.dueTime
+    // ) {
+    //   const { foods, villagers, chests } = await this.finishActivity(activity);
+    //   return {
+    //     activity,
+    //     foods,
+    //     villagers,
+    //     chests,
+    //   };
+    // }
+    // return {
+    //   activity,
+    // };
+
+    const check = async () => {
+      if (activity.status === 'STARTED'
+      // && new Date() < activity.dueTime
+      ) {
+        const { foods, villagers, chests } = await this.finishActivity(activity);
+        if (activity.status === 'STARTED') {
+          //  针对explore的特殊处理：有可能会失败，失败了有延期机制
+          return check();
+        }
+        return {
+          activity,
+          foods,
+          villagers,
+          chests,
+        };
+      }
       return {
         activity,
-        foods,
-        villagers,
-        chests,
       };
-    }
-    return {
-      activity,
     };
+    return check();
 
   }
   async finishActivity(activity) {

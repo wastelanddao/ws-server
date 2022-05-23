@@ -89,7 +89,7 @@ class ItemService extends Service {
         // 成功获取宝箱
         const chest = new Chest();
         chest.opened = false;
-        // chest.activityId = activityId;
+        chest.activityId = activityId;
         chest.playerId = playerId;
         chests.push(chest);
       }

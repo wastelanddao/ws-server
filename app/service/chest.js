@@ -21,12 +21,12 @@ class ChestService extends Service {
     const player = this.ctx.state.user;
     const chest = await Chest.findOwnById(id, player.id);
     if (chest && !chest.opened) {
-      const { chest: chest1, items, foods, villagers } = await this.openChest(chest);
+      const { chest: chest1, item, food, villager } = await this.openChest(chest);
       return {
         chest: chest1,
-        items,
-        foods,
-        villagers,
+        item,
+        food,
+        villager,
       };
     }
     return { chest };
@@ -59,6 +59,17 @@ class ChestService extends Service {
     let villagerAttrRange = [];
     let petAttrRange = [];
     let equipAttrRange = [];
+    const foodArr = [
+      Food.createFromTokenId(food_info.strawberry.tokenId, 1),
+      Food.createFromTokenId(food_info.venison.tokenId, 1),
+      Food.createFromTokenId(food_info.roast_venison.tokenId, 1),
+      Food.createFromTokenId(food_info.grain.tokenId, 1),
+      Food.createFromTokenId(food_info.flour.tokenId, 1),
+      Food.createFromTokenId(food_info.bread.tokenId, 1),
+      Food.createFromTokenId(food_info.pork_chop.tokenId, 1),
+      Food.createFromTokenId(food_info.sausage.tokenId, 1),
+    ];
+    let foodRatioArr = [];
     switch (chest.color) {
       case 'GRAY':
         villagerRatio = 5 / 100;
@@ -68,6 +79,16 @@ class ChestService extends Service {
         villagerAttrRange = [ 1, 50 ];
         petAttrRange = [ 15, 20 ];
         equipAttrRange = [ 1, 10 ];
+        foodRatioArr = [
+          20 / 100,
+          13 / 100,
+          7 / 100,
+          20 / 100,
+          13 / 100,
+          7 / 100,
+          13 / 100,
+          7 / 100,
+        ];
         break;
       case 'GREEN':
         villagerRatio = 30 / 100;
@@ -77,6 +98,16 @@ class ChestService extends Service {
         villagerAttrRange = [ 40, 100 ];
         petAttrRange = [ 20, 25 ];
         equipAttrRange = [ 10, 20 ];
+        foodRatioArr = [
+          16 / 100,
+          13 / 100,
+          10 / 100,
+          15 / 100,
+          13 / 100,
+          10 / 100,
+          13 / 100,
+          10 / 100,
+        ];
         break;
       case 'ORANGE':
         villagerRatio = 50 / 100;
@@ -86,6 +117,16 @@ class ChestService extends Service {
         villagerAttrRange = [ 70, 120 ];
         petAttrRange = [ 25, 35 ];
         equipAttrRange = [ 20, 30 ];
+        foodRatioArr = [
+          11 / 100,
+          13 / 100,
+          13 / 100,
+          11 / 100,
+          13 / 100,
+          13 / 100,
+          13 / 100,
+          13 / 100,
+        ];
         break;
       default:
         throw new Error('wrong color');
@@ -105,7 +146,7 @@ class ChestService extends Service {
       villager.tradable = true;
       await villager.mint(this.ctx.state.user.wallet);
       await villager.save();
-      ret.villagers = [ villager ];
+      ret.villager = villager;
     } else if (helper.randomBool(petRatio)) {
       // pet
       const item = new Item();
@@ -121,7 +162,7 @@ class ChestService extends Service {
       item.status = 'INSTOCK';
       await item.mint(this.ctx.state.user.wallet);
       await item.save();
-      ret.items = [ item ];
+      ret.item = item;
     } else if (helper.randomBool(equipRatio)) {
       // 装备
       const item = new Item();
@@ -138,18 +179,14 @@ class ChestService extends Service {
       item.status = 'INSTOCK';
       await item.mint(this.ctx.state.user.wallet);
       await item.save();
-      ret.items = [ item ];
+      ret.item = item;
     } else {
       // food
       foodRatio;
-      const food = new Food();
-      // food.activityId = activityId;
-      food.tokenId = food_info.venison.tokenId;
-      food.num = helper.randomRangInt([ 5, 10 ]);
-      food.tradable = true;
+      const food = helper.randomSelectWithRatio(foodArr, foodRatioArr);
       await food.mint(this.ctx.state.user.wallet);
       await food.save();
-      ret.foods = [ food ];
+      ret.food = food;
     }
     await chest.save();
     ret.chest = chest;

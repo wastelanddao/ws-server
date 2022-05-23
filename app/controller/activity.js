@@ -1,13 +1,13 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const Item = require('../model/item');
-const Chest = require('../model/chest');
-const Food = require('../model/food');
+// const Item = require('../model/item');
+// const Chest = require('../model/chest');
+// const Food = require('../model/food');
 class ActivityController extends Controller {
   async getActivitys() {
     const { ctx } = this;
-    const Activitys = await ctx.service.activity.getByPlayerId(ctx.state.user.id);
+    const Activitys = await ctx.service.activity.getByPlayerId(ctx.state.user.id, 'STARTED');
     ctx.body = Activitys.map(v => v.toJson());
   }
   async getActivityById() {

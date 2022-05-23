@@ -15,6 +15,18 @@ class Food extends Asset {
   async mint(owner) {
     await Food.mint1155(owner, this.tokenId, this.num);
   }
+  static createFromTokenId(tokenId, num) {
+    const foodInfos = Object.values(foodInfo);
+    const info = foodInfos.find(f => f.tokenId === tokenId);
+    if (!info) {
+      throw new Error('wrong token id');
+    }
+    const food = new Food();
+    food.tokenId = info.tokenId;
+    food.num = num;
+    food.tradable = true;
+    return food;
+  }
 
   getInfo() {
     const info = Object.values(foodInfo).find(info => info.tokenId === this.tokenId);
@@ -23,6 +35,15 @@ class Food extends Asset {
   toJsonWithInfo() {
     const json = this.toJson();
     return Object.assign({}, json, this.getInfo());
+  }
+
+  toItem() {
+    const json = this.toJsonWithInfo();
+    return {
+      ...json,
+      type: 'Food',
+      status: 'INSTOCK',
+    };
   }
 
   static async findByActivityId(actId) {
