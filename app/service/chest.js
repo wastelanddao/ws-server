@@ -152,7 +152,8 @@ class ChestService extends Service {
       const item = new Item();
       item.type = 'Pet';
       // item.activityId = activityId;
-      item.name = 'little dog';
+      item.subType = 'Pet';
+      item.name = 'pet';
       item.num = 1;
       item.quality = helper.randomRangInt(petAttrRange);
       item.strength = helper.randomRangInt(petAttrRange);
@@ -166,8 +167,15 @@ class ChestService extends Service {
     } else if (helper.randomBool(equipRatio)) {
       // 装备
       const item = new Item();
-      const [ type, name ] = helper.randomSelect([[ 'Weapon', '雷神之锤' ], [ 'Dress', '锁子甲' ]]);
+      const [ type, subType, name ] = helper.randomSelect([
+        [ 'Weapon', 'Weapon', 'weapon' ],
+        [ 'Dress', 'Head', 'head' ],
+        [ 'Dress', 'Body', 'body' ],
+        [ 'Dress', 'Legs', 'legs' ],
+        [ 'Dress', 'Feet', 'feet' ],
+      ]);
       item.type = type;
+      item.subType = subType;
       item.name = name;
       // item.activityId = activityId;
       item.num = 1;

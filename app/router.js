@@ -11,6 +11,9 @@ module.exports = app => {
   router.get('/player/:id', controller.player.getPlayer);
 
   router.get('/villagers', controller.villager.getVillagers);
+  router.get('/villagers/:id/items', controller.villager.getVillagerCarriage);
+  router.post('/villagers/:id/items', controller.villager.carryItems);
+  router.delete('/villagers/:id/items', controller.villager.unCarryItems);
 
   router.get('/buildings', controller.building.getBuildings);
 

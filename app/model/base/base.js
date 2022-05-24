@@ -11,7 +11,8 @@ class BaseObject extends Moralis.Object {
     query.equalTo('objectId', id);
     return await query.first({ useMasterKey: true });
   }
-  static async findByPipeline(pipeline) {
+  // note: 此方法查询出来不是model,无法使用save以及各种自定义方法
+  static async findPlainObjByPipeline(pipeline) {
     const query = this.query();
     return await query.aggregate(pipeline);
   }
@@ -20,6 +21,17 @@ class BaseObject extends Moralis.Object {
     for (const key of Object.keys(filter)) {
       query.equalTo(key, filter[key]);
     }
+    for (const include of includes) {
+      query.include(include);
+    }
+    return await query.find({ useMasterKey: true });
+  }
+  static async findByIn(field, arr, ...includes) {
+    const query = Moralis.Query.or(...arr.map(val => {
+      const subQuery = this.query();
+      subQuery.equalTo(field, val);
+      return subQuery;
+    }));
     for (const include of includes) {
       query.include(include);
     }

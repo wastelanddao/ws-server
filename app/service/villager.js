@@ -1,5 +1,6 @@
 'use strict';
 const Service = require('egg').Service;
+const Item = require('../model/item');
 const Player = require('../model/player');
 // const Player = require('../model/player');
 const Villager = require('../model/villager');
@@ -52,6 +53,80 @@ class VillagerService extends Service {
     mother.activity = mother.activity.filter(act => act.id !== activity.id);
     await mother.save();
     return child;
+  }
+  async carryItems(villagerId, ...itemIds) {
+    const [ villager ] = await Villager.findByWallet(this.ctx.state.user.wallet, {
+      includes: 'carriage',
+      filter: { objectId: villagerId },
+    });
+    if (!villager) {
+      this.ctx.throw(`villager ${villagerId} not found`);
+    }
+    const itemInfos = await Item.findPlainObjByPipeline([
+      {
+        match: {
+          objectId: { $in: itemIds },
+        },
+      },
+    ]);
+    for (const itemInfo of itemInfos) {
+      if (itemInfo.villagerId) {
+        throw new Error(`item ${itemInfo.objectId} already be carried`);
+      }
+      if (this.ctx.state.user.wallet !== await Item.ownerOf721(itemInfo.tokenId)) {
+        throw new Error(`item ${itemInfo.objectId} not belong to you`);
+      }
+      const item = new Item();
+      item.id = itemInfo.objectId;
+      item.villagerId = villagerId;
+      item.status = 'CARRIED';
+      await item.save();
+      villager.carriage.push(item);
+    }
+    // 去重
+    const newCarriage = [];
+    villager.carriage.reduce((set, item) => {
+      if (!set.has(item.id)) {
+        set.add(item.id);
+        newCarriage.push(item);
+      }
+      return set;
+    }, new Set());
+    villager.carriage = newCarriage;
+    await villager.save();
+  }
+  async unCarryItems(villagerId, ...itemIds) {
+    const [ villager ] = await Villager.findByWallet(this.ctx.state.user.wallet, {
+      includes: 'carriage',
+      filter: { objectId: villagerId },
+    });
+    if (!villager) {
+      this.ctx.throw(`villager ${villagerId} not found`);
+    }
+    const itemInfos = await Item.findPlainObjByPipeline([
+      {
+        match: {
+          objectId: { $in: itemIds },
+        },
+      },
+    ]);
+    for (const itemInfo of itemInfos) {
+      if (itemInfo.villagerId !== villagerId) {
+        throw new Error(`item ${itemInfo.objectId} not carried by villager ${villagerId}`);
+      }
+      const item = new Item();
+      item.id = itemInfo.objectId;
+      item.villagerId = null;
+      item.status = 'INSTOCK';
+      await item.save();
+      villager.carriage = villager.carriage.filter(c => c.id !== item.id);
+    }
+    await villager.save();
+  }
+  // 获取villager穿戴的item，支持批量查询
+  async getCarriage(...villagerId) {
+    const items = await Item.findByIn('villagerId', villagerId);
+    return items;
   }
 }
 

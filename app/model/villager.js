@@ -63,7 +63,7 @@ class Villager extends Asset {
   }
   static async findOwnById(id, playerId) {
     const [ v ] = await this.findByPlayerId(playerId, {
-      includes: 'activity',
+      includes: [ 'activity', 'carriage' ],
       filter: {
         objectId: id,
       },
@@ -115,15 +115,36 @@ class Villager extends Asset {
   }
   get realLuck() {
     const scale = this.isAdult ? 1 : 0.3;
-    return this.luck * scale;
+    let ret = this.luck * scale;
+    for (const item of this.carriage) {
+      if (item.luck === undefined) {
+        throw new Error('data error');
+      }
+      ret += item.luck;
+    }
+    return ret;
   }
   get realStrength() {
     const scale = this.isAdult ? 1 : 0.3;
-    return this.strength * scale;
+    let ret = this.strength * scale;
+    for (const item of this.carriage) {
+      if (item.strength === undefined) {
+        throw new Error('data error');
+      }
+      ret += item.strength;
+    }
+    return ret;
   }
   get realEndurance() {
     const scale = this.isAdult ? 1 : 0.3;
-    return this.endurance * scale;
+    let ret = this.endurance * scale;
+    for (const item of this.carriage) {
+      if (item.endurance === undefined) {
+        throw new Error('data error');
+      }
+      ret += item.endurance;
+    }
+    return ret;
   }
 
 }

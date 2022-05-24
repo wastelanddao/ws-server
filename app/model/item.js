@@ -8,66 +8,41 @@ class Item extends Asset {
     // Pass the ClassName to the Moralis.Object constructor
     super('Item');
   }
-  get type() {
-    return this.get('type');
-  }
-  set type(attr) {
-    return this.set('type', attr);
-  }
-  get name() {
-    return this.get('name');
-  }
-  set name(attr) {
-    return this.set('name', attr);
-  }
-  get num() {
-    return this.get('num');
-  }
-  set num(attr) {
-    return this.set('num', attr);
-  }
-  get quality() {
-    return this.get('quality');
-  }
-  set quality(attr) {
-    return this.set('quality', attr);
-  }
-  get strength() {
-    return this.get('strength');
-  }
-  set strength(attr) {
-    return this.set('strength', attr);
-  }
-  get luck() {
-    return this.get('luck');
-  }
-  set luck(attr) {
-    return this.set('luck', attr);
-  }
-  get endurance() {
-    return this.get('endurance');
-  }
-  set endurance(attr) {
-    return this.set('endurance', attr);
-  }
-  get durability() {
-    return this.get('durability');
-  }
-  set durability(attr) {
-    return this.set('durability', attr);
-  }
-  get status() {
-    return this.get('status');
-  }
-  set status(attr) {
-    return this.set('status', attr);
-  }
-  get activityId() {
-    return this.get('activityId');
-  }
-  set activityId(attr) {
-    return this.set('activityId', attr);
-  }
+  get type() { return this.get('type'); }
+  set type(attr) { return this.set('type', attr); }
+
+  get subType() { return this.get('subType'); }
+  set subType(attr) { return this.set('subType', attr); }
+
+  get name() { return this.get('name'); }
+  set name(attr) { return this.set('name', attr); }
+
+  get num() { return this.get('num'); }
+  set num(attr) { return this.set('num', attr); }
+
+  get quality() { return this.get('quality'); }
+  set quality(attr) { return this.set('quality', attr); }
+
+  get strength() { return this.get('strength'); }
+  set strength(attr) { return this.set('strength', attr); }
+
+  get luck() { return this.get('luck'); }
+  set luck(attr) { return this.set('luck', attr); }
+
+  get endurance() { return this.get('endurance'); }
+  set endurance(attr) { return this.set('endurance', attr); }
+
+  get durability() { return this.get('durability'); }
+  set durability(attr) { return this.set('durability', attr); }
+
+  get status() { return this.get('status'); }
+  set status(attr) { return this.set('status', attr); }
+
+  get activityId() { return this.get('activityId'); }
+  set activityId(attr) { return this.set('activityId', attr); }
+
+  get villagerId() { return this.get('villagerId'); }
+  set villagerId(attr) { return this.set('villagerId', attr); }
 
   // static async findByActivityId(actId) {
   //   const query = this.query();
@@ -85,12 +60,18 @@ class Item extends Asset {
     const tokenId = await Item.mint721(owner, metaData);
     this.tokenId = tokenId;
   }
+
+  async ownerOf() {
+    return await Item.ownerOf721(this.tokenId);
+  }
 }
 
 Item.schema = {
   type: Joi.valid('Tool', 'Weapon', 'Dress', 'Pet'),
+  subType: Joi.valid('Bow', 'Basket', 'Weapon', 'Pet', 'Head', 'Body', 'Legs', 'Feet'),
   name: Joi.string(),
   activityId: Joi.string(),
+  villagerId: Joi.string().allow(null),
   num: Joi.number().integer(),
   quality: Joi.number().integer(),
   strength: Joi.number().integer(),
