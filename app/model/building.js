@@ -31,7 +31,9 @@ class Building extends Asset {
   async mint(owner) {
     const { type, subType } = this;
     const metaData = { type, subType };
-    return await Building.mint721(owner, metaData);
+    const tokenId = await Building.mint721(owner, metaData);
+    this.tokenId = tokenId;
+    this.name = this.name || `${subType}#${tokenId}`;
   }
 
   static async findByPlayerId(playerId, {

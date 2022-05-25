@@ -8,12 +8,17 @@ const Player = require('../player');
 const uuid = require('uuid').v4;
 // const consts = require('../const');
 class Asset extends BaseObject {
+  get name() { return this.get('name'); }
+  set name(attr) { this.set('name', attr); }
+
+  get description() { return this.get('description'); }
+  set description(attr) { this.set('description', attr); }
+
+  get image() { return this.get('image'); }
+  set image(attr) { this.set('image', attr); }
+
   get tokenId() { return this.get('tokenId'); }
   set tokenId(attr) { this.set('tokenId', attr); }
-
-  // 数量，注意：非同质化代币不关心数量
-  get num() { return this.get('num'); }
-  set num(attr) { this.set('num', attr); }
 
   get tradable() { return this.get('tradable'); }
   set tradable(val) { return this.set('tradable', val); }
@@ -148,7 +153,9 @@ class Asset extends BaseObject {
 
 Asset.schema = {
   tokenId: Joi.string(),
-  num: Joi.number().integer(),
+  name: Joi.string(),
+  description: Joi.string(),
+  image: Joi.string(),
   tradable: Joi.bool(),
   activityId: Joi.string(),
 };

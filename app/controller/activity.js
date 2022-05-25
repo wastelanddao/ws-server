@@ -24,10 +24,7 @@ class ActivityController extends Controller {
 
     ctx.body = {
       activity: activity.toJson(),
-      items: foods.map(i => ({
-        ...i.toJsonWithInfo(),
-        type: 'Food',
-      })),
+      items: foods.map(i => i.toItem()),
       chests: chests.map(c => c.toJson()),
       villagers: villagers.map(v => v.toJson()),
     };

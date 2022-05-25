@@ -59,15 +59,15 @@ class ChestService extends Service {
     let villagerAttrRange = [];
     let petAttrRange = [];
     let equipAttrRange = [];
-    const foodArr = [
-      Food.createFromTokenId(food_info.strawberry.tokenId, 1),
-      Food.createFromTokenId(food_info.venison.tokenId, 1),
-      Food.createFromTokenId(food_info.roast_venison.tokenId, 1),
-      Food.createFromTokenId(food_info.grain.tokenId, 1),
-      Food.createFromTokenId(food_info.flour.tokenId, 1),
-      Food.createFromTokenId(food_info.bread.tokenId, 1),
-      Food.createFromTokenId(food_info.pork_chop.tokenId, 1),
-      Food.createFromTokenId(food_info.sausage.tokenId, 1),
+    const foodTokenArr = [
+      food_info.strawberry.tokenId,
+      food_info.venison.tokenId,
+      food_info.roast_venison.tokenId,
+      food_info.grain.tokenId,
+      food_info.flour.tokenId,
+      food_info.bread.tokenId,
+      food_info.pork_chop.tokenId,
+      food_info.sausage.tokenId,
     ];
     let foodRatioArr = [];
     switch (chest.color) {
@@ -136,7 +136,7 @@ class ChestService extends Service {
       // 村民
       const villager = new Villager();
       villager.gender = helper.randomBool(0.5) ? 'MALE' : 'FEMALE';
-      villager.name = '';
+      // villager.name = '';
       villager.birthTime = 0;
       villager.strength = helper.randomRangInt(villagerAttrRange);
       villager.luck = helper.randomRangInt(villagerAttrRange);
@@ -153,8 +153,7 @@ class ChestService extends Service {
       item.type = 'Pet';
       // item.activityId = activityId;
       item.subType = 'Pet';
-      item.name = 'pet';
-      item.num = 1;
+      // item.name = 'pet';
       item.quality = helper.randomRangInt(petAttrRange);
       item.strength = helper.randomRangInt(petAttrRange);
       item.luck = helper.randomRangInt(petAttrRange);
@@ -167,18 +166,17 @@ class ChestService extends Service {
     } else if (helper.randomBool(equipRatio)) {
       // 装备
       const item = new Item();
-      const [ type, subType, name ] = helper.randomSelect([
-        [ 'Weapon', 'Weapon', 'weapon' ],
-        [ 'Dress', 'Head', 'head' ],
-        [ 'Dress', 'Body', 'body' ],
-        [ 'Dress', 'Legs', 'legs' ],
-        [ 'Dress', 'Feet', 'feet' ],
+      const [ type, subType ] = helper.randomSelect([
+        [ 'Weapon', 'Weapon' ],
+        [ 'Dress', 'Head' ],
+        [ 'Dress', 'Body' ],
+        [ 'Dress', 'Legs' ],
+        [ 'Dress', 'Feet' ],
       ]);
       item.type = type;
       item.subType = subType;
-      item.name = name;
+      // item.name = name;
       // item.activityId = activityId;
-      item.num = 1;
       item.quality = helper.randomRangInt(equipAttrRange);
       item.strength = helper.randomRangInt(equipAttrRange);
       item.luck = helper.randomRangInt(equipAttrRange);
@@ -191,9 +189,11 @@ class ChestService extends Service {
     } else {
       // food
       foodRatio;
-      const food = helper.randomSelectWithRatio(foodArr, foodRatioArr);
-      await food.mint(this.ctx.state.user.wallet);
-      await food.save();
+      const foodToken = helper.randomSelectWithRatio(foodTokenArr, foodRatioArr);
+      const food = await Food.getOrCreate(this.ctx.state.user.wallet, foodToken);
+      const num = 1;
+      await food.mint(num);
+      food.num = num;
       ret.food = food;
     }
     await chest.save();

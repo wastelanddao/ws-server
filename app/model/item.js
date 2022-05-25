@@ -14,12 +14,6 @@ class Item extends Asset {
   get subType() { return this.get('subType'); }
   set subType(attr) { return this.set('subType', attr); }
 
-  get name() { return this.get('name'); }
-  set name(attr) { return this.set('name', attr); }
-
-  get num() { return this.get('num'); }
-  set num(attr) { return this.set('num', attr); }
-
   get quality() { return this.get('quality'); }
   set quality(attr) { return this.set('quality', attr); }
 
@@ -44,12 +38,6 @@ class Item extends Asset {
   get villagerId() { return this.get('villagerId'); }
   set villagerId(attr) { return this.set('villagerId', attr); }
 
-  // static async findByActivityId(actId) {
-  //   const query = this.query();
-  //   query.equalTo('activityId', actId);
-  //   return await query.find({ useMasterKey: true });
-  // }
-
   static getContractAddress() {
     return 'item';
   }
@@ -59,6 +47,7 @@ class Item extends Asset {
     const metaData = { type, name, quality, strength, luck, endurance };
     const tokenId = await Item.mint721(owner, metaData);
     this.tokenId = tokenId;
+    this.name = this.name || `${this.subType}#${tokenId}`;
   }
 
   async ownerOf() {
@@ -69,10 +58,8 @@ class Item extends Asset {
 Item.schema = {
   type: Joi.valid('Tool', 'Weapon', 'Dress', 'Pet'),
   subType: Joi.valid('Bow', 'Basket', 'Weapon', 'Pet', 'Head', 'Body', 'Legs', 'Feet'),
-  name: Joi.string(),
   activityId: Joi.string(),
   villagerId: Joi.string().allow(null),
-  num: Joi.number().integer(),
   quality: Joi.number().integer(),
   strength: Joi.number().integer(),
   luck: Joi.number().integer(),

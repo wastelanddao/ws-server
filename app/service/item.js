@@ -9,7 +9,7 @@ const foodInfo = require('../model/food_info');
 const Item = require('../model/item');
 class ItemService extends Service {
   async finishPicking(villager, activity) {
-    const { id: activityId, playerId } = activity;
+    const { playerId } = activity;
     const player = await Player.findById(playerId);
     const { carriage = [] } = villager;
     let count = 1;
@@ -18,12 +18,9 @@ class ItemService extends Service {
         count = count * 2;
       }
     });
-    const strawberry = new Food();
+    const strawberry = await Food.getOrCreate(player.wallet, foodInfo.strawberry.tokenId);
+    await strawberry.mint(count);
     strawberry.num = count;
-    strawberry.tokenId = foodInfo.strawberry.tokenId;
-    // strawberry.activityId = activityId;
-    await strawberry.mint(player.wallet);
-    await strawberry.save();
     activity.status = 'ENDED';
     await activity.save();
     villager.activity = villager.activity.filter(act => act.id !== activity.id);
@@ -31,7 +28,7 @@ class ItemService extends Service {
     return strawberry;
   }
   async finishHunting(villager, activity) {
-    const { id: activityId, happiness, playerId } = activity;
+    const { happiness, playerId } = activity;
     const player = await Player.findById(playerId);
     let { carriage = [], realLuck: luck, realStrength: strength } = villager;
     luck = luck * happiness / 100;
@@ -61,12 +58,9 @@ class ItemService extends Service {
       totalNum += count;
     }
 
-    const venison = new Food();
-    venison.tokenId = foodInfo.venison.tokenId;
+    const venison = await Food.getOrCreate(player.wallet, foodInfo.venison.tokenId);
+    await venison.mint(totalNum);
     venison.num = totalNum;
-    // venison.activityId = activityId;
-    await venison.mint(player.wallet);
-    await venison.save();
     activity.status = 'ENDED';
     await activity.save();
     villager.activity = villager.activity.filter(act => act.id !== activity.id);

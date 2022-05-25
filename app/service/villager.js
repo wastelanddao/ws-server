@@ -21,7 +21,7 @@ class VillagerService extends Service {
       Villager.findOwnById(motherId, playerId),
     ]);
     const child = new Villager();
-    child.name = '';
+    // child.name = '';
     child.motherId = motherId;
     child.fatherId = activity.extraInfo.fatherId;
     child.gender = Math.random() < 0.5 ? 'MALE' : 'FEMALE';

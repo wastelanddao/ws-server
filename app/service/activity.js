@@ -175,20 +175,6 @@ class ActivityService extends Service {
     if (!activity) {
       throw new Error(`activity ${id} not found`);
     }
-    // if (activity.status === 'STARTED'
-    // // && new Date() < activity.dueTime
-    // ) {
-    //   const { foods, villagers, chests } = await this.finishActivity(activity);
-    //   return {
-    //     activity,
-    //     foods,
-    //     villagers,
-    //     chests,
-    //   };
-    // }
-    // return {
-    //   activity,
-    // };
 
     const check = async () => {
       if (activity.status === 'STARTED'

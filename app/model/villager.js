@@ -18,6 +18,7 @@ class Villager extends Asset {
     const metaData = { gender, birthTime, strength, luck, endurance, traits };
     const tokenId = await Villager.mint721(owner, metaData);
     this.tokenId = tokenId;
+    this.name = this.name || `villager#${tokenId}`;
     return tokenId;
   }
   static create({
@@ -70,8 +71,6 @@ class Villager extends Asset {
     });
     return v;
   }
-  get name() { return this.get('name'); }
-  set name(attr) { return this.set('name', attr); }
 
   get gender() { return this.get('gender'); }
   set gender(attr) { return this.set('gender', attr); }
