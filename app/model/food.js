@@ -29,7 +29,10 @@ class Food extends Asset {
     return 'food';
   }
   async mint(num) {
-    await Food.mint1155(this.owner, this.tokenId, num);
+    return await Food.mint1155(this.owner, this.tokenId, num);
+  }
+  async burn(num) {
+    return await Food.burn1155(this.owner, this.tokenId, num);
   }
   // 查询余额
   async balanceOf() {

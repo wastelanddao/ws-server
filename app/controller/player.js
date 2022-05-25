@@ -8,7 +8,14 @@ class PlayerController extends Controller {
     if (!player) {
       ctx.throw('not found', 404);
     }
-    ctx.body = player.toPlain();
+    let contribution;
+    if (player) {
+      contribution = await this.ctx.service.contribution.getContributionByWallet(player.wallet);
+    }
+    ctx.body = {
+      ...player.toJson(),
+      contribution,
+    };
   }
 }
 

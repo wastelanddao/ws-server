@@ -8,7 +8,9 @@ module.exports = app => {
   router.get('/', controller.home.index);
   router.post('/login', controller.auth.login);
 
-  router.get('/player/:id', controller.player.getPlayer);
+  router.get('/players/:id', controller.player.getPlayer);
+  router.put('/players/:id/contribution', controller.contribution.contribute);
+  router.get('/players/:id/contribution', controller.contribution.getContribute);
 
   router.get('/villagers', controller.villager.getVillagers);
   router.get('/villagers/:id/items', controller.villager.getVillagerCarriage);

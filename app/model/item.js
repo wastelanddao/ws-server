@@ -49,6 +49,9 @@ class Item extends Asset {
     this.tokenId = tokenId;
     this.name = this.name || `${this.subType}#${tokenId}`;
   }
+  async burn(owner) {
+    return Item.burn721(owner, this.tokenId);
+  }
 
   async ownerOf() {
     return await Item.ownerOf721(this.tokenId);
