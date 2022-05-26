@@ -59,16 +59,12 @@ class PlayerService extends Service {
       warehouse.type = 'Warehouse';
       warehouse.subType = 'Warehouse';
       warehouse.location = 4;
-      const [ hutId, hallId, portalId, warehouseId ] = await Promise.all([
+      await Promise.all([
         hut.mint(player.wallet),
         hall.mint(player.wallet),
         portal.mint(player.wallet),
         warehouse.mint(player.wallet),
       ]);
-      hut.tokenId = hutId;
-      hall.tokenId = hallId;
-      portal.tokenId = portalId;
-      warehouse.tokenId = warehouseId;
       await Promise.all([
         hut.save(),
         hall.save(),

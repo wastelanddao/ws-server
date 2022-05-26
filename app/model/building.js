@@ -34,6 +34,7 @@ class Building extends Asset {
     const tokenId = await Building.mint721(owner, metaData);
     this.tokenId = tokenId;
     this.name = this.name || `${subType}#${tokenId}`;
+    return tokenId;
   }
 
   static async findByPlayerId(playerId, {
@@ -68,7 +69,7 @@ class Building extends Asset {
 
 Building.schema = {
   type: Joi.valid('Hut', 'Hall', 'Warehouse', 'Portal', 'Workplace'),
-  subType: Joi.valid('Hut', 'Hall', 'Warehouse', 'Portal', 'Farm', 'Mill', 'Bakery', 'Vineyard', 'Winery', 'Pig Farm', 'Sausage Shop', 'Rotisserie'),
+  subType: Joi.valid('Hut', 'Hall', 'Warehouse', 'Portal', 'Farm', 'Mill', 'Bakery', 'Swine Farm', 'Butcher\'s', 'Bonfire'),
   status: Joi.valid('WORKING', 'INUSE', 'INSTOCK'),
   villagers: Joi.number().integer().min(0),
   location: Joi.number().integer(),
