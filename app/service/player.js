@@ -10,68 +10,70 @@ class PlayerService extends Service {
       player = Player.fromUser(user);
       player.populationCapacity = 5;
       await player.save();
-    }
 
-    // init
-    {
+      // init
+      {
       // init adam
-      const adam = Villager.create({
-        name: 'Adam',
-        gender: 'MALE',
-        tradable: false,
-        inScene: true,
-      });
-      // init eve
-      const eve = Villager.create({
-        name: 'Eve',
-        gender: 'FEMALE',
-        tradable: false,
-        inScene: true,
-      });
-      adam.tokenId = await adam.mint(player.wallet);
-      eve.tokenId = await eve.mint(player.wallet);
-      await Promise.all([
-        adam.save(),
-        eve.save(),
-      ]);
+        const adam = Villager.create({
+          name: 'Adam',
+          gender: 'MALE',
+          tradable: false,
+          inScene: true,
+        });
+        // init eve
+        const eve = Villager.create({
+          name: 'Eve',
+          gender: 'FEMALE',
+          tradable: false,
+          inScene: true,
+        });
+        adam.tokenId = await adam.mint(player.wallet);
+        eve.tokenId = await eve.mint(player.wallet);
+        await Promise.all([
+          adam.save(),
+          eve.save(),
+        ]);
 
-      // init Hut
-      const hut = new Building();
-      hut.type = 'Hut';
-      hut.subType = 'Hut';
-      hut.location = 1;
-      hut.villagers = 2; // adam and eva
+        // init Hut
+        const hut = new Building();
+        hut.type = 'Hut';
+        hut.subType = 'Hut';
+        hut.location = 1;
+        hut.villagers = 2; // adam and eva
 
-      // init Hall
-      const hall = new Building();
-      hall.type = 'Hall';
-      hall.subType = 'Hall';
-      hall.location = 2;
+        // init Hall
+        const hall = new Building();
+        hall.type = 'Hall';
+        hall.subType = 'Hall';
+        hall.location = 2;
 
-      // init Portal
-      const portal = new Building();
-      portal.type = 'Portal';
-      portal.subType = 'Portal';
-      portal.location = 3;
+        // init Portal
+        const portal = new Building();
+        portal.type = 'Portal';
+        portal.subType = 'Portal';
+        portal.location = 3;
 
-      // init Warehouse
-      const warehouse = new Building();
-      warehouse.type = 'Warehouse';
-      warehouse.subType = 'Warehouse';
-      warehouse.location = 4;
-      await Promise.all([
-        hut.mint(player.wallet),
-        hall.mint(player.wallet),
-        portal.mint(player.wallet),
-        warehouse.mint(player.wallet),
-      ]);
-      await Promise.all([
-        hut.save(),
-        hall.save(),
-        portal.save(),
-        warehouse.save(),
-      ]);
+        // init Warehouse
+        const warehouse = new Building();
+        warehouse.type = 'Warehouse';
+        warehouse.subType = 'Warehouse';
+        warehouse.location = 4;
+        await Promise.all([
+          hut.mint(player.wallet),
+          hall.mint(player.wallet),
+          portal.mint(player.wallet),
+          warehouse.mint(player.wallet),
+        ]);
+        await Promise.all([
+          hut.save(),
+          hall.save(),
+          portal.save(),
+          warehouse.save(),
+        ]);
+      }
     }
+
+
     return player;
   }
 
