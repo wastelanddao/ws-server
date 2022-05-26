@@ -128,6 +128,37 @@ class VillagerService extends Service {
     const items = await Item.findByIn('villagerId', villagerId);
     return items;
   }
+
+  async identityAttributes(villager, player) {
+    const { identity } = player;
+    const { realLuck: luck, realStrength: strength, realEndurance: endurance } = villager;
+    if (!identity || identity.color === 'GRAY') {
+      return {
+        luck,
+        strength,
+        endurance,
+      };
+    }
+    let scale = 1;
+    switch (identity.color) {
+      case 'GREEN':
+        scale = 1.07;
+        break;
+      case 'BLUE':
+        scale = 1.14;
+        break;
+      case 'ORANGE':
+        scale = 1.21;
+        break;
+      default:
+        throw new Error(`wrong error ${identity.color}`);
+    }
+    return {
+      luck: luck * scale,
+      strength: strength * scale,
+      endurance: endurance * scale,
+    };
+  }
 }
 
 module.exports = VillagerService;

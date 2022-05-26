@@ -51,6 +51,13 @@ class Player extends BaseObject {
     return this.set('setp', attr);
   }
 
+  get extraInfo() {
+    return this.get('extraInfo');
+  }
+  set extraInfo(attr) {
+    return this.set('extraInfo', attr);
+  }
+
   static fromUser(user) {
     const player = new Player();
     player.name = `player ${user.username}`;
@@ -83,6 +90,7 @@ Player.schema = {
   identity: Joi.any(),
   rewards: Joi.number().min(0),
   setp: Joi.number().integer().min(0),
+  extraInfo: Joi.object(),
 };
 Moralis.Object.registerSubclass('Player', Player);
 module.exports = Player;

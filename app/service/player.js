@@ -3,6 +3,7 @@ const Service = require('egg').Service;
 const Player = require('../model/player');
 const Villager = require('../model/villager');
 const Building = require('../model/building');
+const Identity = require('../model/identity');
 class PlayerService extends Service {
   async initPlayer(user) {
     let player = await Player.getByWallet(user.ethAddress);
@@ -10,7 +11,6 @@ class PlayerService extends Service {
       player = Player.fromUser(user);
       player.populationCapacity = 5;
       await player.save();
-
       // init
       {
       // init adam
@@ -73,7 +73,25 @@ class PlayerService extends Service {
       }
     }
 
-
+    const { extraInfo = {} } = player;
+    // init identity
+    if (!extraInfo.identityInited) {
+      const identity = new Identity();
+      identity.color = 'GREEN';
+      identity.avatar = 'ipfs//';
+      await identity.mint(player.wallet);
+      await identity.save();
+      player.identity = {
+        contract: Identity.getContractAddress(),
+        tokenId: identity.tokenId,
+        avatar: identity.avatar,
+        color: identity.color,
+      };
+      player.extraInfo = Object.assign(extraInfo, {
+        identityInited: true,
+      });
+      await player.save();
+    }
     return player;
   }
 
