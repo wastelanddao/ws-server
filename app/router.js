@@ -18,6 +18,8 @@ module.exports = app => {
   router.delete('/villagers/:id/items', controller.villager.unCarryItems);
 
   router.get('/buildings', controller.building.getBuildings);
+  router.post('/buildings/:id/production', controller.building.doProduction);
+  router.get('/buildings/:id/production', controller.building.getProduction);
 
   router.get('/activities', controller.activity.getActivitys);
   router.get('/activities/:id', controller.activity.getActivityById);

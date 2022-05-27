@@ -20,10 +20,16 @@ module.exports = {
     if (end < start) {
       throw new Error('end shoud bigger than start');
     }
-    return parseInt(start + Math.random() * (end - start));
+    if (!Number.isInteger(start) || !Number.isInteger(end)) {
+      throw new Error('start and end should be integer');
+    }
+    return parseInt(start + Math.random() * (end + 1 - start));
   },
   randomSelect(arr) {
-    const idx = this.randomRangInt([ 0, arr.length ]);
+    if (!arr.length) {
+      throw new Error('should not be empty');
+    }
+    const idx = this.randomRangInt([ 0, arr.length - 1 ]);
     return arr[idx];
   },
   randomSelectWithRatio(arr, ratioArr) {

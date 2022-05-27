@@ -129,7 +129,7 @@ class VillagerService extends Service {
     return items;
   }
 
-  async identityAttributes(villager, player) {
+  identityAttributes(villager, player) {
     const { identity } = player;
     const { realLuck: luck, realStrength: strength, realEndurance: endurance } = villager;
     if (!identity || identity.color === 'GRAY') {

@@ -2,6 +2,7 @@
 const Service = require('egg').Service;
 // const Player = require('../model/player');
 const Activity = require('../model/activity');
+const Player = require('../model/player');
 const Villager = require('../model/villager');
 // const Food = require('../model/food');
 class ActivityService extends Service {
@@ -35,6 +36,10 @@ class ActivityService extends Service {
   }
 
   async doPicking(playerId, villagerId) {
+    const player = await Player.findById(playerId);
+    if (!player) {
+      return this.ctx.throw('player not exists', 404);
+    }
     const villager = await Villager.findOwnById(villagerId, playerId);
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
@@ -51,7 +56,7 @@ class ActivityService extends Service {
     act.type = 'Picking Fruits';
     const now = new Date();
     act.startTime = now;
-    const { realEndurance: endurance } = villager;
+    const { endurance } = this.service.villager.identityAttributes(villager, player);
     let hours = 24;
     if (endurance > 20) {
       hours = 24 - (endurance - 20) / 20;
@@ -64,6 +69,10 @@ class ActivityService extends Service {
   }
 
   async doHunting(playerId, villagerId, happinessPoint) {
+    const player = await Player.findById(playerId);
+    if (!player) {
+      return this.ctx.throw('player not exists', 404);
+    }
     const villager = await Villager.findOwnById(villagerId, playerId);
     if (!villager) {
       return this.ctx.throw('villager not exists', 404);
@@ -81,7 +90,7 @@ class ActivityService extends Service {
     act.happiness = happinessPoint;
     const now = new Date();
     act.startTime = now;
-    const { realEndurance: endurance } = villager;
+    const { endurance } = this.service.villager.identityAttributes(villager, player);
     let hours = 24;
     if (endurance > 20) {
       hours = 24 - (endurance - 20) / 20;
@@ -178,7 +187,7 @@ class ActivityService extends Service {
 
     const check = async () => {
       if (activity.status === 'STARTED'
-      // && new Date() < activity.dueTime
+      // && new Date() > activity.dueTime
       ) {
         const { foods, villagers, chests } = await this.finishActivity(activity);
         if (activity.status === 'STARTED') {

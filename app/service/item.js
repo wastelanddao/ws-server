@@ -30,7 +30,8 @@ class ItemService extends Service {
   async finishHunting(villager, activity) {
     const { happiness, playerId } = activity;
     const player = await Player.findById(playerId);
-    let { carriage = [], realLuck: luck, realStrength: strength } = villager;
+    const { carriage = [] } = villager;
+    let { luck, strength } = this.service.villager.identityAttributes(villager, player);
     luck = luck * happiness / 100;
     strength = strength * happiness / 100;
     let totalNum = 0;
@@ -69,7 +70,8 @@ class ItemService extends Service {
   }
   async finishExploring(villager, activity) {
     const { id: activityId, happiness, playerId } = activity;
-    let { realLuck: luck, realStrength: strength, realEndurance: endurance } = villager;
+    const player = await Player.findById(playerId);
+    let { luck, strength, endurance } = this.service.villager.identityAttributes(villager, player);
     luck = luck * happiness / 100;
     strength = strength * happiness / 100;
     endurance = endurance * happiness / 100;

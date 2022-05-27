@@ -92,6 +92,60 @@ class PlayerService extends Service {
       });
       await player.save();
     }
+    // init workplace
+    if (!extraInfo.workplaceInited) {
+      // init Farm
+      const farm = new Building();
+      farm.type = 'Workplace';
+      farm.subType = 'Farm';
+      farm.location = 5;
+      // init Mill
+      const mill = new Building();
+      mill.type = 'Workplace';
+      mill.subType = 'Mill';
+      mill.location = 6;
+      // init Bakery
+      const bakery = new Building();
+      bakery.type = 'Workplace';
+      bakery.subType = 'Bakery';
+      bakery.location = 7;
+      // init Swine Farm
+      const swineFarm = new Building();
+      swineFarm.type = 'Workplace';
+      swineFarm.subType = 'Swine Farm';
+      swineFarm.location = 8;
+      // init Butcher\'s
+      const butcher = new Building();
+      butcher.type = 'Workplace';
+      butcher.subType = 'Butcher\'s';
+      butcher.location = 9;
+      // init Bonfire
+      const bonfire = new Building();
+      bonfire.type = 'Workplace';
+      bonfire.subType = 'Bonfire';
+      bonfire.location = 10;
+
+      await Promise.all([
+        farm.mint(player.wallet),
+        mill.mint(player.wallet),
+        bakery.mint(player.wallet),
+        swineFarm.mint(player.wallet),
+        butcher.mint(player.wallet),
+        bonfire.mint(player.wallet),
+      ]);
+      await Promise.all([
+        farm.save(),
+        mill.save(),
+        bakery.save(),
+        swineFarm.save(),
+        butcher.save(),
+        bonfire.save(),
+      ]);
+      player.extraInfo = Object.assign(extraInfo, {
+        workplaceInited: true,
+      });
+      await player.save();
+    }
     return player;
   }
 
