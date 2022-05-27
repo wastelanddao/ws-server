@@ -142,7 +142,6 @@ class ChestService extends Service {
       villager.luck = helper.randomRangInt(villagerAttrRange);
       villager.endurance = helper.randomRangInt(villagerAttrRange);
       villager.inScene = false;
-      villager.traits = {};
       villager.tradable = true;
       await villager.mint(this.ctx.state.user.wallet);
       await villager.save();

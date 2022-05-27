@@ -33,13 +33,6 @@ class VillagerService extends Service {
     child.strength = Math.round((father.strength + mother.strength) * percent);
     child.luck = Math.round((father.luck + mother.luck) * percent);
     child.endurance = Math.round((father.endurance + mother.endurance) * percent);
-    child.traits = {
-      eye: 0,
-      eyebrow: 0,
-      ear: 0,
-      nose: 0,
-      mouth: 0,
-    };
     child.tradable = true;
     child.carriage = [];
     child.activity = [];

@@ -2,15 +2,37 @@
 const Asset = require('./base/asset');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
-// const Player = require('./player');
-// const Activity = require('./activity');
-// const Item = require('./base/item');
-// const Base = require('./base/base');
+const helper = require('../extend/helper');
 
 class Villager extends Asset {
   constructor() {
     // Pass the ClassName to the Moralis.Object constructor
     super('Villager');
+    // 款式颜色随机
+    const traits = {
+      eye: helper.randomRangInt([ 1, 10 ]),
+      eyebrow: helper.randomRangInt([ 1, 10 ]),
+      hair: helper.randomRangInt([ 1, 10 ]),
+      nose: helper.randomRangInt([ 1, 10 ]),
+      mouth: helper.randomRangInt([ 1, 10 ]),
+    };
+    const colorBody = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4 ],
+      [ 0.25, 0.25, 0.25, 0.25 ]
+    );
+    traits.nose = helper.joinUint(10, colorBody, traits.nose);
+    const colorHair = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
+      [ 0.20, 0.20, 0.02, 0.02, 0.10, 0.05, 0.20, 0.01, 0.05, 0.05, 0.02, 0.08 ]
+    );
+    traits.hair = helper.joinUint(10, colorHair, traits.hair);
+    const colorEyebrow = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
+      [ 0.20, 0.20, 0.02, 0.02, 0.10, 0.05, 0.20, 0.01, 0.05, 0.05, 0.02, 0.08 ]
+    );
+    traits.eyebrow = helper.joinUint(10, colorEyebrow, traits.eyebrow);
+    this.traits = traits;
+
   }
 
   async mint(owner) {
@@ -30,13 +52,6 @@ class Villager extends Asset {
     endurance = 25,
     inScene = false,
     activity = [],
-    traits = {
-      eye: 0,
-      eyebrow: 0,
-      ear: 0,
-      nose: 0,
-      mouth: 0,
-    },
     carriage = [],
     tradable = true,
   } = {}) {
@@ -49,7 +64,6 @@ class Villager extends Asset {
     v.endurance = endurance;
     v.inScene = inScene;
     v.activity = activity;
-    v.traits = traits;
     v.carriage = carriage;
     v.tradable = tradable;
     return v;
@@ -159,13 +173,7 @@ Villager.schema = {
   endurance: Joi.number().integer(),
   inScene: Joi.bool(),
   activity: Joi.array().items(Joi.object().instance(Moralis.Object)),
-  traits: Joi.object({
-    eye: Joi.number().integer(),
-    eyebrow: Joi.number().integer(),
-    ear: Joi.number().integer(),
-    nose: Joi.number().integer(),
-    mouth: Joi.number().integer(),
-  }),
+  traits: Joi.object(),
   carriage: Joi.array().items(Joi.object().instance(Moralis.Object)),
   tradable: Joi.bool(),
   happiness: Joi.number().integer(),

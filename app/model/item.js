@@ -2,11 +2,18 @@
 const Asset = require('./base/asset');
 const Joi = require('joi');
 const Moralis = require('moralis/node');
-
+const helper = require('../extend/helper');
 class Item extends Asset {
   constructor() {
     // Pass the ClassName to the Moralis.Object constructor
     super('Item');
+    // 款式颜色随机
+    const style = helper.randomRangInt([ 1, 10 ]);
+    const color = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+      [ 0.30,	0.20,	0.10,	0.10,	0.10, 0.08, 0.06, 0.03, 0.02, 0.01 ]
+    );
+    this.style = helper.joinUint(10, color, style);
   }
   get type() { return this.get('type'); }
   set type(attr) { return this.set('type', attr); }
@@ -32,8 +39,8 @@ class Item extends Asset {
   get status() { return this.get('status'); }
   set status(attr) { return this.set('status', attr); }
 
-  get activityId() { return this.get('activityId'); }
-  set activityId(attr) { return this.set('activityId', attr); }
+  get style() { return this.get('style'); }
+  set style(attr) { return this.set('style', attr); }
 
   get villagerId() { return this.get('villagerId'); }
   set villagerId(attr) { return this.set('villagerId', attr); }
@@ -61,7 +68,7 @@ class Item extends Asset {
 Item.schema = {
   type: Joi.valid('Tool', 'Weapon', 'Dress', 'Pet'),
   subType: Joi.valid('Bow', 'Basket', 'Weapon', 'Pet', 'Head', 'Body', 'Legs', 'Feet'),
-  activityId: Joi.string(),
+  style: Joi.number().integer().min(0),
   villagerId: Joi.string().allow(null),
   quality: Joi.number().integer(),
   strength: Joi.number().integer(),

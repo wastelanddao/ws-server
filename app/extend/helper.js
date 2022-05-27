@@ -52,4 +52,23 @@ module.exports = {
     // 循环10次还没中,那就随机取一个
     return this.randomSelect(arr);
   },
+  joinUint(width, ...ints) {
+    let strJoin = '';
+    for (const i of ints) {
+      if (!Number.isInteger(i)) {
+        throw new Error('should be integer');
+      }
+      let b = i.toString(2);
+      if (b.length > width) {
+        throw new Error('width exceeded');
+      }
+      // 高位补0
+      const cnt = width - b.length;
+      for (let index = 0; index < cnt; index++) {
+        b = '0' + b;
+      }
+      strJoin += b;
+    }
+    return parseInt(strJoin, 2);
+  },
 };
