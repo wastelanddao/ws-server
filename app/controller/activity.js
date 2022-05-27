@@ -31,12 +31,12 @@ class ActivityController extends Controller {
   }
   async doActivity() {
     const { ctx } = this;
-    const { villagerId, type } = ctx.request.body;
+    const { villagerId, type, items: foodInfos } = ctx.request.body;
     if (!villagerId || !type) {
       ctx.throw('need villagerId and type', 400);
     }
     const villagerIds = Array.isArray(villagerId) ? villagerId : [ villagerId ];
-    const act = await ctx.service.activity.doActivity(ctx.state.user.id, type, villagerIds);
+    const act = await ctx.service.activity.doActivity(type, villagerIds, foodInfos);
     ctx.body = act.toJson();
   }
 }

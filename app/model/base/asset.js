@@ -68,7 +68,7 @@ class Asset extends BaseObject {
     const contract = this.getContractAddress();
     const [ nft ] = await MockNFT.findByWallet(contract, owner, tokenId);
     if (!nft) {
-      throw new Error('nft not found');
+      return 0;
     }
     return nft.num;
   }
