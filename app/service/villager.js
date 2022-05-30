@@ -39,6 +39,7 @@ class VillagerService extends Service {
     const refreshPopulationCapacity = await this.service.player.refreshPopulationCapacity(playerId);
     const inSceneVillager = await this.service.player.getInSceneVillagerByPlayerId(playerId);
     child.inScene = inSceneVillager.length < refreshPopulationCapacity;
+    child.randomtraits();
     child.tokenId = await child.mint(player.wallet);
     await child.save();
     activity.status = 'ENDED';

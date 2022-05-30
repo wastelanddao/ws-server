@@ -10,7 +10,7 @@ class VillagerController extends Controller {
   async getVillagerCarriage() {
     const { ctx } = this;
     const items = await ctx.service.villager.getCarriage(ctx.params.id);
-    ctx.body = items.map(v => v.toJson());
+    ctx.body = items;
   }
   async carryItems() {
     const { ctx } = this;

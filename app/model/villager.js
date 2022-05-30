@@ -8,31 +8,6 @@ class Villager extends Asset {
   constructor() {
     // Pass the ClassName to the Moralis.Object constructor
     super('Villager');
-    // 款式颜色随机
-    const traits = {
-      eye: helper.randomRangInt([ 1, 10 ]),
-      eyebrow: helper.randomRangInt([ 1, 10 ]),
-      hair: helper.randomRangInt([ 1, 10 ]),
-      nose: helper.randomRangInt([ 1, 10 ]),
-      mouth: helper.randomRangInt([ 1, 10 ]),
-    };
-    const colorBody = helper.randomSelectWithRatio(
-      [ 1, 2, 3, 4 ],
-      [ 0.25, 0.25, 0.25, 0.25 ]
-    );
-    traits.nose = helper.joinUint(10, colorBody, traits.nose);
-    const colorHair = helper.randomSelectWithRatio(
-      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
-      [ 0.20, 0.20, 0.02, 0.02, 0.10, 0.05, 0.20, 0.01, 0.05, 0.05, 0.02, 0.08 ]
-    );
-    traits.hair = helper.joinUint(10, colorHair, traits.hair);
-    const colorEyebrow = helper.randomSelectWithRatio(
-      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
-      [ 0.20, 0.20, 0.02, 0.02, 0.10, 0.05, 0.20, 0.01, 0.05, 0.05, 0.02, 0.08 ]
-    );
-    traits.eyebrow = helper.joinUint(10, colorEyebrow, traits.eyebrow);
-    this.traits = traits;
-
   }
 
   async mint(owner) {
@@ -158,6 +133,33 @@ class Villager extends Asset {
       ret += item.endurance;
     }
     return ret;
+  }
+
+  randomtraits() {
+    // 款式颜色随机
+    const traits = {
+      eye: helper.randomRangInt([ 1, 10 ]),
+      eyebrow: helper.randomRangInt([ 1, 10 ]),
+      hair: helper.randomRangInt([ 1, 10 ]),
+      nose: helper.randomRangInt([ 1, 10 ]),
+      mouth: helper.randomRangInt([ 1, 10 ]),
+    };
+    const colorBody = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4 ],
+      [ 0.25, 0.25, 0.25, 0.25 ]
+    );
+    traits.nose = helper.joinUint(10, colorBody, traits.nose);
+    const colorHair = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
+      [ 0.20, 0.20, 0.02, 0.02, 0.10, 0.05, 0.20, 0.01, 0.05, 0.05, 0.02, 0.08 ]
+    );
+    traits.hair = helper.joinUint(10, colorHair, traits.hair);
+    const colorEyebrow = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 ],
+      [ 0.20, 0.20, 0.02, 0.02, 0.10, 0.05, 0.20, 0.01, 0.05, 0.05, 0.02, 0.08 ]
+    );
+    traits.eyebrow = helper.joinUint(10, colorEyebrow, traits.eyebrow);
+    this.traits = traits;
   }
 
 }

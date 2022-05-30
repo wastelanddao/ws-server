@@ -43,6 +43,10 @@ class BaseObject extends Moralis.Object {
   toJson() {
     return this.toPlain();
   }
+  // 用于JSON.stringify
+  toJSON() {
+    return this.toJson();
+  }
 
   // 此方法尽量不要重载
   async validateSchema() {

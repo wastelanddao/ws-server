@@ -27,6 +27,8 @@ class PlayerService extends Service {
           tradable: false,
           inScene: true,
         });
+        adam.randomtraits();
+        eve.randomtraits();
         adam.tokenId = await adam.mint(player.wallet);
         eve.tokenId = await eve.mint(player.wallet);
         await Promise.all([

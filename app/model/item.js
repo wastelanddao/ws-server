@@ -7,13 +7,6 @@ class Item extends Asset {
   constructor() {
     // Pass the ClassName to the Moralis.Object constructor
     super('Item');
-    // 款式颜色随机
-    const style = helper.randomRangInt([ 1, 10 ]);
-    const color = helper.randomSelectWithRatio(
-      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
-      [ 0.30,	0.20,	0.10,	0.10,	0.10, 0.08, 0.06, 0.03, 0.02, 0.01 ]
-    );
-    this.style = helper.joinUint(10, color, style);
   }
   get type() { return this.get('type'); }
   set type(attr) { return this.set('type', attr); }
@@ -62,6 +55,15 @@ class Item extends Asset {
 
   async ownerOf() {
     return await Item.ownerOf721(this.tokenId);
+  }
+  randomStyle() {
+    // 款式颜色随机
+    const style = helper.randomRangInt([ 1, 10 ]);
+    const color = helper.randomSelectWithRatio(
+      [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ],
+      [ 0.30,	0.20,	0.10,	0.10,	0.10, 0.08, 0.06, 0.03, 0.02, 0.01 ]
+    );
+    this.style = helper.joinUint(10, color, style);
   }
 }
 

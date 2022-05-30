@@ -35,6 +35,7 @@ class ChestService extends Service {
     if (chest.opened) {
       return chest;
     }
+    this.logger.info(`open chest ${chest.id}`);
     const activityId = chest.activityId;
     const chests = await Chest.findByActivityId(activityId);
     const hasOpened = chests.filter(c => c.opened).sort((a, b) => (a.openedAt > b.openedAt ? 1 : -1));
@@ -46,6 +47,9 @@ class ChestService extends Service {
     const order = hasOpened.length + 1;
     const chestProbability = lastOpened && lastOpened.isGreen ? 0 : Math.pow(order / 30, 2) * 10;
     const isGreen = this.ctx.helper.randomBool(chestProbability);
+    this.logger.info(`当前宝箱是第${order}个`);
+    this.logger.info(`当前宝箱是是绿色宝箱的几率为${chestProbability}`);
+    this.logger.info(`当前宝箱是是绿色宝箱? ${isGreen}`);
     chest.color = isGreen ? 'GREEN' : 'GRAY';
     chest.opened = true;
     chest.openedAt = new Date();
@@ -143,6 +147,7 @@ class ChestService extends Service {
       villager.endurance = helper.randomRangInt(villagerAttrRange);
       villager.inScene = false;
       villager.tradable = true;
+      villager.randomtraits();
       await villager.mint(this.ctx.state.user.wallet);
       await villager.save();
       ret.villager = villager;
@@ -159,6 +164,7 @@ class ChestService extends Service {
       item.endurance = helper.randomRangInt(petAttrRange);
       item.durability = 20;
       item.status = 'INSTOCK';
+      item.randomStyle();
       await item.mint(this.ctx.state.user.wallet);
       await item.save();
       ret.item = item;
@@ -182,6 +188,7 @@ class ChestService extends Service {
       item.endurance = helper.randomRangInt(equipAttrRange);
       item.durability = 20;
       item.status = 'INSTOCK';
+      item.randomStyle();
       await item.mint(this.ctx.state.user.wallet);
       await item.save();
       ret.item = item;
